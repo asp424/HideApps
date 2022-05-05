@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">HideApps</string>
+    <string name="channel">StartIntentService</string>
+    <string name="name">HideApps</string>
+</resources>
