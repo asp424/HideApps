@@ -21,6 +21,8 @@ val implList = with(composeVersion) {
         "com.google.accompanist:accompanist-pager-indicators:0.24.1-alpha",
         "com.google.accompanist:accompanist-pager:0.24.1-alpha",
         "com.google.accompanist:accompanist-navigation-animation:0.24.1-alpha",
+        "com.squareup.leakcanary:leakcanary-android:2.8.1"
+    
         // "androidx.room:room-runtime:2.4.2",
         //"androidx.room:room-ktx:2.4.2"
     )
@@ -35,8 +37,7 @@ val gradleList = listOf(
     "org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10"
 )
 
-val pluginsList = listOf("com.android.application", "org.jetbrains.kotlin.android", "kotlin-kapt"
-    )
+val pluginsList = listOf("com.android.application", "org.jetbrains.kotlin.android", "kotlin-kapt")
 
 
 

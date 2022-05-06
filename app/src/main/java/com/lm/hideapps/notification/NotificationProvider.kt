@@ -15,7 +15,9 @@ import javax.inject.Inject
 
 interface NotificationProvider {
 	
-	fun showNotification(): Notification
+	fun notification(text: String, outgoing: Boolean): Notification
+	
+	fun showNotification(text: String, id: Int, outgoing: Boolean)
 	
 	fun hideNotification()
 	
@@ -25,11 +27,11 @@ interface NotificationProvider {
 		private val notificationManager: NotificationManagerCompat
 	) : NotificationProvider {
 		
-		override fun showNotification(): Notification {
+		override fun notification(text: String, outgoing: Boolean): Notification {
 			createChannel
 			return notificationBuilder
-				.setOngoing(true)
-				.setContentTitle("Service started")
+				.setOngoing(outgoing)
+				.setContentTitle(text)
 				.setSmallIcon(R.mipmap.ic_launcher)
 				.setPriority(PRIORITY_MAX)
 				.setCategory(CATEGORY_SERVICE)
@@ -47,6 +49,10 @@ interface NotificationProvider {
 				notificationManager.createNotificationChannel(this)
 			}
 		}
+		
+		override fun showNotification(text: String, id: Int, outgoing: Boolean)
+		= notificationManager.notify(id, notification(text, outgoing))
+		
 		override fun hideNotification() = notificationManager.cancelAll()
 	}
 }

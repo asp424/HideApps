@@ -8,6 +8,7 @@ import android.content.res.Resources
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.lm.hideapps.MainActivity
+import com.lm.hideapps.notification.NotificationProvider
 import com.lm.hideapps.receiver_service.IntentReceiveService
 import dagger.BindsInstance
 import dagger.Component
@@ -27,7 +28,7 @@ interface AppComponent {
 		fun notificationManager(notificationBuilder: NotificationManagerCompat): Builder
 		
 		@BindsInstance
-		fun startIntentService(componentName: (((String) -> Flow<String>) -> Unit) -> Unit): Builder
+		fun controlIntentService(flow: Flow<IntentReceiveService>): Builder
 		
 		@BindsInstance
 		fun resources(resources: Resources): Builder

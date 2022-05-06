@@ -37,7 +37,7 @@ fun Main(intentViewModel: IntentViewModel) {
 			}
 			
 			Button(
-				onClick = { intentViewModel.stopObserveIntentAction()
+				onClick = { intentViewModel.stopObserveActionIntent()
 				}
 			) {
 				Text(text = "stop")

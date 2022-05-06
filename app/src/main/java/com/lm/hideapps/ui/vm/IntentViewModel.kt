@@ -1,28 +1,47 @@
 package com.lm.hideapps.ui.vm
 
 import android.content.Intent
-import android.util.Log
+import android.content.Intent.*
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Job
+import com.lm.hideapps.notification.NotificationProvider
+import com.lm.hideapps.receiver_service.IntentReceiveService
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class IntentViewModel @Inject constructor(
-	private val startIntentService: (((String) -> Flow<String>) -> Unit) -> Unit
+	private val controlIntentServer: Flow<IntentReceiveService>,
+	private val notification: NotificationProvider
 ) : ViewModel() {
 	
-	var job: Job = Job()
-	
-	fun observeIntentAction() = startIntentService { receiver ->
-		if (!job.isActive) 
-		job = viewModelScope.launch {
-			receiver(Intent.ACTION_HEADSET_PLUG).collect {
-				Log.d("My", it)
+	fun observeIntentAction() {
+		IntentReceiveService().apply {
+			scope.launch {
+				
+				controlIntentServer.collect {
+					it.receiver(
+						listOf(
+							ACTION_POWER_CONNECTED,
+							ACTION_HEADSET_PLUG,
+							ACTION_POWER_DISCONNECTED
+						)
+					).collect { action ->
+						when(action){
+							ACTION_POWER_CONNECTED ->
+								notification.showNotification("Charger connected", 1, false)
+							ACTION_HEADSET_PLUG ->
+								notification.showNotification("Headset plugged action", 2, false)
+							ACTION_POWER_DISCONNECTED ->
+								notification.showNotification("Charger disconnected", 3, false)
+						}
+					}
+				}
 			}
 		}
 	}
 	
-	fun stopObserveIntentAction() = job.cancel()
+	fun stopObserveActionIntent() = IntentReceiveService().scope.cancel()
 }
+
+
