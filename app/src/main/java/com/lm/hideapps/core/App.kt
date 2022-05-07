@@ -1,53 +1,53 @@
 package com.lm.hideapps.core
 
+import android.annotation.SuppressLint
 import android.app.Application
-import android.content.ComponentName
+import android.app.PendingIntent.FLAG_UPDATE_CURRENT
+import android.app.PendingIntent.getActivity
 import android.content.Intent
-import android.content.ServiceConnection
-import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import com.lm.hideapps.MainActivity
 import com.lm.hideapps.R
 import com.lm.hideapps.di.DaggerAppComponent
 import com.lm.hideapps.receiver_service.IntentReceiveService
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.channels.trySendBlocking
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.flowOn
+import com.lm.hideapps.shared_pref.SharedPrefProvider
 
+@SuppressLint("UnspecifiedImmutableFlag")
 class App : Application() {
-	
-	private var mBinder = false
 	
 	private val startIntent by lazy { Intent(this, IntentReceiveService::class.java) }
 	
-	private val controlIntentServer
-		get() = callbackFlow {
-			startForegroundService(startIntent)
-			var mBinder: Boolean
-			object : ServiceConnection {
-				override fun onServiceConnected(className: ComponentName, service: IBinder) {
-					trySendBlocking(
-						((service as IntentReceiveService.LocalBinder).service()))
-				}
-				override fun onServiceDisconnected(arg0: ComponentName) {}
-			}.apply {
-				mBinder = bindService(startIntent, this, BIND_AUTO_CREATE)
-				awaitClose { if (mBinder) unbindService(this); stopService(startIntent) }
+	private val sharedPref by lazy {
+		SharedPrefProvider
+			.Base(getSharedPreferences(getString(R.string.nameShared), MODE_PRIVATE))
+	}
+	
+	private val serviceControl: ((Boolean) -> Unit) -> Unit by lazy {
+		{
+			if (!sharedPref.isRunning()) {
+				startForegroundService(startIntent); it(sharedPref.run())
+			} else {
+				stopService(startIntent); it(sharedPref.stop())
 			}
-		}.flowOn(IO)
+		}
+	}
 	
 	val appComponent by lazy {
 		DaggerAppComponent.builder()
-			.resources(resources)
 			.notificationBuilder(NotificationCompat.Builder(this, getString(R.string.channel)))
 			.notificationManager(NotificationManagerCompat.from(this))
-			.controlIntentService(controlIntentServer)
+			.notificationIntent(
+				getActivity(
+					this, 0,
+					Intent(this, MainActivity::class.java), FLAG_UPDATE_CURRENT
+				)
+			)
+			.sharedPreferences(sharedPref)
+			.serviceControl(serviceControl)
 			.create()
 	}
 }
+
 
 

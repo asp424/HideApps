@@ -7,13 +7,11 @@ import javax.inject.Inject
 
 class IntentReceiverImpl @Inject constructor() : IntentReceiver {
 	
-	override val broadcastReceiver: ((String) -> Unit) -> BroadcastReceiver
-		get() =
-			{ onReceive ->
-				object : BroadcastReceiver() {
-					override fun onReceive(context: Context?, intent: Intent?) {
-						onReceive(intent?.action.toString())
-					}
-				}
+	override fun broadcastReceiver(onReceive: (String) -> Unit) =
+		object : BroadcastReceiver() {
+			override fun onReceive(context: Context?, intent: Intent?) {
+				onReceive(intent?.action.toString())
 			}
+		}
+	
 }

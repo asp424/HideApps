@@ -4,5 +4,5 @@ import android.content.BroadcastReceiver
 
 interface IntentReceiver {
 	
-	val broadcastReceiver: ((String) -> Unit) -> BroadcastReceiver
+	fun broadcastReceiver(onReceive: (String) -> Unit):BroadcastReceiver
 }
