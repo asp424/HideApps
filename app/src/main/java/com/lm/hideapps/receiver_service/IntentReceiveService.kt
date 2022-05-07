@@ -1,15 +1,11 @@
 package com.lm.hideapps.receiver_service
 
-import android.app.NotificationManager
-import android.app.NotificationManager.IMPORTANCE_HIGH
-import android.app.NotificationManager.IMPORTANCE_MIN
 import android.app.Service
 import android.content.Intent
 import android.content.Intent.*
 import android.content.IntentFilter
 import android.os.Binder
 import android.os.IBinder
-import androidx.core.app.NotificationCompat
 import com.lm.hideapps.core.App
 import com.lm.hideapps.data.sources.IntentReceiver
 import com.lm.hideapps.notification.NotificationProvider

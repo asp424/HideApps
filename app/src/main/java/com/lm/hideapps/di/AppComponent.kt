@@ -25,16 +25,10 @@ interface AppComponent {
 	interface Builder {
 		
 		@BindsInstance
-		fun notificationBuilder(notificationManager: NotificationCompat.Builder): Builder
-		
-		@BindsInstance
-		fun notificationManager(notificationBuilder: NotificationManagerCompat): Builder
-		
-		@BindsInstance
-		fun notificationIntent(notificationIntent: PendingIntent): Builder
-		
-		@BindsInstance
 		fun serviceControl(serviceControl: ((Boolean) -> Unit) -> Unit): Builder
+		
+		@BindsInstance
+		fun context(application: Application): Builder
 		
 		@BindsInstance
 		fun sharedPreferences(sharedPreferencesProvider: SharedPrefProvider): Builder

@@ -14,7 +14,9 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 		ViewModelModule::class,
 		IntentReceiverModule::class,
 		ServiceNotificationInteractorModule::class,
-		ActionsNotificationInteractorModule::class
+		ActionsNotificationInteractorModule::class,
+		NotificationManagerModule::class,
+		NotificationBuilderModule::class
 	]
 )
 interface MapModule

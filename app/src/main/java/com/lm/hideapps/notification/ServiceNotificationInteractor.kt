@@ -16,8 +16,7 @@ interface ServiceNotificationInteractor {
 	
 	class Base @Inject constructor(
 		private val notificationManager: NotificationManagerCompat,
-		private val notificationBuilder: NotificationCompat.Builder,
-		private val activityIntent: PendingIntent
+		private val notificationBuilder: NotificationCompat.Builder
 	) : ServiceNotificationInteractor {
 		override fun serviceNotification(): Notification {
 			serviceChannel
@@ -27,7 +26,6 @@ interface ServiceNotificationInteractor {
 				.setSmallIcon(R.mipmap.ic_launcher)
 				.setPriority(NotificationCompat.PRIORITY_MAX)
 				.setCategory(NotificationCompat.CATEGORY_SERVICE)
-				.setContentIntent(activityIntent)
 				.build()
 		}
 		
