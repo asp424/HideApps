@@ -20,6 +20,7 @@ interface AppComponent {
 		
 		fun create(): AppComponent
 	}
+	
 	fun inject(intentReceiveService: IntentReceiveService)
 	fun sharedPreferences(): SharedPrefProvider
 	fun serviceControl(): ((Boolean) -> Unit) -> Unit

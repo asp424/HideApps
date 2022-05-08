@@ -8,7 +8,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 @Module(
 	includes = [
 		NotificationProviderModule::class,
-		IntentReceiverModule::class,
 		ServiceNotificationInteractorModule::class,
 		ActionsNotificationInteractorModule::class,
 		NotificationManagerModule::class,

@@ -21,6 +21,7 @@ fun ServiceControl() {
 		var isRunningText by remember {
 			mutableStateOf(if (sharedPreferences().isRunning()) "running" else "stopped")
 		}
+		var isRunning by remember { mutableStateOf(sharedPreferences().isRunning()) }
 		var action by remember { mutableStateOf("") }
 		var fetchActions by remember { mutableStateOf(false) }
 		var activesJob: Job by remember { mutableStateOf(Job().apply { cancel() }) }
@@ -40,17 +41,17 @@ fun ServiceControl() {
 		}
 		Column(Modifier.fillMaxSize(), Center, CenterHorizontally) {
 			Button(
-				{
-					serviceControl().invoke {
-						isRunningText = if (it) "running" else "stopped"
-					}
+				{ isRunning = !isRunning
+					serviceControl().invoke { isRunningText = if (it) "running" else "stopped" }
 				},
-				Modifier.padding(bottom = 10.dp)
+				Modifier.padding(bottom = 10.dp),
+				enabled = !(isRunning && fetchActions && sharedPreferences().isRunning())
 			) { Text(text = isRunningText) }
+			
 			Button(
 				{ fetchActions = !fetchActions },
 				Modifier.padding(bottom = 10.dp)
-			) { Text(text = "bind") }
+			) { Text(text = if (fetchActions) "connected" else "disconnected") }
 			Text(text = action)
 		}
 	}
