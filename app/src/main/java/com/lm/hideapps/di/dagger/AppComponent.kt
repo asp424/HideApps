@@ -2,6 +2,7 @@ package com.lm.hideapps.di.dagger
 
 import android.app.Application
 import com.lm.hideapps.MainActivity
+import com.lm.hideapps.notification.NotificationProvider
 import com.lm.hideapps.receiver_service.IntentReceiveService
 import com.lm.hideapps.shared_pref.SharedPrefProvider
 import dagger.BindsInstance
@@ -21,8 +22,8 @@ interface AppComponent {
 		fun create(): AppComponent
 	}
 	
-	fun inject(intentReceiveService: IntentReceiveService)
 	fun sharedPreferences(): SharedPrefProvider
 	fun serviceControl(): ((Boolean) -> Unit) -> Unit
 	fun bindService(): Flow<IntentReceiveService>
+	fun notificationProvider(): NotificationProvider
 }

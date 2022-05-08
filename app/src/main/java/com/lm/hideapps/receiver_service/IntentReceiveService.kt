@@ -25,9 +25,6 @@ class IntentReceiveService : Service() {
 	
 	private var job: Job = Job()
 	
-	@Inject
-	lateinit var notificationProvider: NotificationProvider
-	
 	private fun broadcastReceiver(onReceive: (String) -> Unit) =
 		object : BroadcastReceiver() {
 			override fun onReceive(context: Context?, intent: Intent?) {
@@ -43,10 +40,8 @@ class IntentReceiveService : Service() {
 	}.flowOn(IO)
 	
 	override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-		appComponent.inject(this)
-		startForeground(101, notificationProvider.serviceNotification())
-		job = collectActions()
-		
+		startForeground(101, appComponent.notificationProvider().serviceNotification())
+		collectActions()
 		return START_NOT_STICKY
 	}
 	
@@ -62,17 +57,10 @@ class IntentReceiveService : Service() {
 	}
 	
 	private fun collectActions() = CoroutineScope(IO).launch {
-		actions.apply {
-			receiver(this).collect { action ->
-				notificationProvider.actionNotification(action)
-			}
+		receiver(actions).collect { action ->
+			appComponent.notificationProvider().actionNotification(action)
 		}
-	}
-	
-	override fun onUnbind(intent: Intent?): Boolean {
-		job.cancel()
-		return super.onUnbind(intent)
-	}
+	}.apply { job = this }
 	
 	private val actions by lazy {
 		listOf(ACTION_POWER_CONNECTED, ACTION_HEADSET_PLUG, ACTION_POWER_DISCONNECTED)
