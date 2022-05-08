@@ -1,8 +1,6 @@
-package com.lm.hideapps.di
+package com.lm.hideapps.di.dagger
 
-import com.lm.hideapps.di.modules.*
-import com.lm.hideapps.di.modules.viewmodels_modules.ViewModelFactoryModule
-import com.lm.hideapps.di.modules.viewmodels_modules.ViewModelModule
+import com.lm.hideapps.di.dagger.modules.*
 import dagger.Module
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
@@ -10,14 +8,15 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 @Module(
 	includes = [
 		NotificationProviderModule::class,
-		ViewModelFactoryModule::class,
-		ViewModelModule::class,
 		IntentReceiverModule::class,
 		ServiceNotificationInteractorModule::class,
 		ActionsNotificationInteractorModule::class,
 		NotificationManagerModule::class,
 		NotificationBuilderModule::class,
-		ResourcesModule::class
+		ResourcesModule::class,
+		ServiceControlModule::class,
+		BindServiceModule::class,
+		SharedPreferencesModule::class
 	]
 )
 interface MapModule

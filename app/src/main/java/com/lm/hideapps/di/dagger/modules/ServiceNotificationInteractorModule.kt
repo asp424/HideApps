@@ -1,4 +1,4 @@
-package com.lm.hideapps.di.modules
+package com.lm.hideapps.di.dagger.modules
 
 import com.lm.hideapps.notification.ServiceNotificationInteractor
 import dagger.Binds

@@ -1,11 +1,10 @@
-package com.lm.hideapps.di.modules
+package com.lm.hideapps.di.dagger.modules
 
 import android.annotation.SuppressLint
 import android.app.Application
 import android.app.PendingIntent
 import android.content.Intent
 import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import com.lm.hideapps.MainActivity
 import com.lm.hideapps.R
 import dagger.Module

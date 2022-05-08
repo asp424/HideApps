@@ -1,13 +1,13 @@
 package com.lm.hideapps.receiver_service
 
 import android.app.Service
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
 import android.content.Intent.*
 import android.content.IntentFilter
 import android.os.Binder
-import com.lm.hideapps.core.App
-import com.lm.hideapps.data.sources.IntentReceiver
-import com.lm.hideapps.di.AppComponent
+import com.lm.hideapps.core.appComponent
 import com.lm.hideapps.notification.NotificationProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
@@ -28,18 +28,22 @@ class IntentReceiveService : Service() {
 	@Inject
 	lateinit var notificationProvider: NotificationProvider
 	
-	@Inject
-	lateinit var intentReceiver: IntentReceiver
+	private fun broadcastReceiver(onReceive: (String) -> Unit) =
+		object : BroadcastReceiver() {
+			override fun onReceive(context: Context?, intent: Intent?) {
+				onReceive(intent?.action.toString())
+			}
+		}
 	
-	private fun receiver(actions: List<String>) = callbackFlow {
-		intentReceiver.broadcastReceiver { trySendBlocking(it) }.also { receiver ->
+	fun receiver(actions: List<String>) = callbackFlow {
+		broadcastReceiver { trySendBlocking(it) }.also { receiver ->
 			actions.forEach { registerReceiver(receiver, IntentFilter(it)) }
 			awaitClose { unregisterReceiver(receiver) }
 		}
 	}.flowOn(IO)
 	
 	override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-		(applicationContext as App).appComponent.inject(this)
+		appComponent.inject(this)
 		startForeground(101, notificationProvider.serviceNotification())
 		job = collectActions()
 		
@@ -63,6 +67,11 @@ class IntentReceiveService : Service() {
 				notificationProvider.actionNotification(action)
 			}
 		}
+	}
+	
+	override fun onUnbind(intent: Intent?): Boolean {
+		job.cancel()
+		return super.onUnbind(intent)
 	}
 	
 	private val actions by lazy {
