@@ -20,7 +20,7 @@ class NotificationBuilderModule {
 	@Singleton
 	fun bindsNotificationBuilder(application: Application) = NotificationCompat.Builder(application,
 		application.resources.getString(
-		R.string.channel)).setContentIntent(
+		R.string.name)).setContentIntent(
 		PendingIntent.getActivity(
 			application, 0,
 			Intent(application, MainActivity::class.java), PendingIntent.FLAG_UPDATE_CURRENT

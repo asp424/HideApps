@@ -5,9 +5,9 @@ import android.content.Intent
 import android.content.Intent.*
 import android.content.IntentFilter
 import android.os.Binder
-import android.os.IBinder
 import com.lm.hideapps.core.App
 import com.lm.hideapps.data.sources.IntentReceiver
+import com.lm.hideapps.di.AppComponent
 import com.lm.hideapps.notification.NotificationProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
@@ -32,11 +32,9 @@ class IntentReceiveService : Service() {
 	lateinit var intentReceiver: IntentReceiver
 	
 	private fun receiver(actions: List<String>) = callbackFlow {
-		intentReceiver.broadcastReceiver { trySendBlocking(it) }.apply {
-			actions.forEach {
-				registerReceiver(this, IntentFilter(it))
-			}
-			awaitClose { unregisterReceiver(this) }
+		intentReceiver.broadcastReceiver { trySendBlocking(it) }.also { receiver ->
+			actions.forEach { registerReceiver(receiver, IntentFilter(it)) }
+			awaitClose { unregisterReceiver(receiver) }
 		}
 	}.flowOn(IO)
 	
@@ -48,7 +46,7 @@ class IntentReceiveService : Service() {
 		return START_NOT_STICKY
 	}
 	
-	override fun onBind(intent: Intent?): IBinder = binder
+	override fun onBind(intent: Intent?) = binder
 	
 	inner class LocalBinder : Binder() {
 		fun service(): IntentReceiveService = this@IntentReceiveService
@@ -60,17 +58,15 @@ class IntentReceiveService : Service() {
 	}
 	
 	private fun collectActions() = CoroutineScope(IO).launch {
-		listActions.apply {
+		actions.apply {
 			receiver(this).collect { action ->
 				notificationProvider.actionNotification(action)
 			}
 		}
 	}
 	
-	private val message by lazy { "Service is running" }
-	
-	companion object {
-		val listActions =
-			listOf(ACTION_POWER_CONNECTED, ACTION_HEADSET_PLUG, ACTION_POWER_DISCONNECTED)
+	private val actions by lazy {
+		listOf(ACTION_POWER_CONNECTED, ACTION_HEADSET_PLUG, ACTION_POWER_DISCONNECTED)
 	}
 }
+

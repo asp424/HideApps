@@ -22,5 +22,10 @@ fun Main(intentViewModel: IntentViewModel, sharedPreferences: SharedPrefProvider
 			{ intentViewModel.service.invoke { isRunningText = it.toString() } },
 			Modifier.padding(bottom = 10.dp)
 		) { Text(text = isRunningText) }
+		
+		Button(
+			{ intentViewModel.bind.invoke() },
+			Modifier.padding(bottom = 10.dp)
+		) { Text(text = "bind") }
 	}
 }

@@ -22,7 +22,7 @@ android {
         kotlinOptions {
             jvmTarget = jvm; freeCompilerArgs = argsList
         }
-        buildFeatures { compose = true }
+        buildFeatures { compose = true; viewBinding = true }
         packagingOptions { resources { excludes += res } }
     }
 }

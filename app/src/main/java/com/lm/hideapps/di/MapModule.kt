@@ -16,7 +16,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 		ServiceNotificationInteractorModule::class,
 		ActionsNotificationInteractorModule::class,
 		NotificationManagerModule::class,
-		NotificationBuilderModule::class
+		NotificationBuilderModule::class,
+		ResourcesModule::class
 	]
 )
 interface MapModule

@@ -10,6 +10,7 @@ interface NotificationProviderModule {
 	
 	@Singleton
 	@Binds
-	fun bindsNotificationProvider(notificationProvider: NotificationProvider.Base): NotificationProvider
+	fun bindsNotificationProvider(notificationProvider: NotificationProvider.Base)
+	: NotificationProvider
 	
 }

@@ -3,13 +3,13 @@ package com.lm.hideapps.notification
 import android.app.NotificationChannel
 import android.app.NotificationManager.IMPORTANCE_HIGH
 import android.app.PendingIntent
+import android.content.res.Resources
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationCompat.PRIORITY_MAX
 import androidx.core.app.NotificationManagerCompat
 import com.lm.hideapps.R
 import kotlinx.coroutines.*
 import javax.inject.Inject
-
 
 interface ActionsNotificationInteractor {
 	
@@ -21,7 +21,8 @@ interface ActionsNotificationInteractor {
 	
 	class Base @Inject constructor(
 		private val notificationBuilder: NotificationCompat.Builder,
-		private val notificationManager: NotificationManagerCompat
+		private val notificationManager: NotificationManagerCompat,
+		private val resources: Resources
 	) : ActionsNotificationInteractor {
 		
 		override fun actionNotification(
@@ -58,6 +59,6 @@ interface ActionsNotificationInteractor {
 		
 		private val scope by lazy { CoroutineScope(Dispatchers.IO) }
 		private val delayShow by lazy { suspend { delay(2000L) } }
-		private val String.cutAction get() = substringAfter("android.intent.action.")
+		private val String.cutAction get() = substringAfter(resources.getString(R.string.substring))
 	}
 }

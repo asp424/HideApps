@@ -11,6 +11,7 @@ import com.lm.hideapps.ui.vm.IntentViewModel
 import com.lm.hideapps.ui.vm.ViewModelFactory
 import javax.inject.Inject
 
+
 class MainActivity : ComponentActivity() {
 	
 	@Inject
@@ -28,4 +29,3 @@ class MainActivity : ComponentActivity() {
 		setContent { Main(intentViewModel, sharedPreferences) }
 	}
 }
-

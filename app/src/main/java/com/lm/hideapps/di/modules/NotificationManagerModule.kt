@@ -15,6 +15,7 @@ class NotificationManagerModule {
 	
 	@Provides
 	@Singleton
-	fun bindsNotificationManager(application: Application) = NotificationManagerCompat.from(application)
+	fun bindsNotificationManager(application: Application)
+	= NotificationManagerCompat.from(application)
 	
 }

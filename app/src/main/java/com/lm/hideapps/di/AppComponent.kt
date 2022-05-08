@@ -28,6 +28,9 @@ interface AppComponent {
 		fun serviceControl(serviceControl: ((Boolean) -> Unit) -> Unit): Builder
 		
 		@BindsInstance
+		fun bindService(bindService: () -> Any): Builder
+		
+		@BindsInstance
 		fun context(application: Application): Builder
 		
 		@BindsInstance
@@ -40,6 +43,6 @@ interface AppComponent {
 	
 	fun inject(mainActivity: MainActivity)
 	
-	fun notificationProvider(): NotificationProvider
+	fun appComponent(): AppComponent
 	
 }
