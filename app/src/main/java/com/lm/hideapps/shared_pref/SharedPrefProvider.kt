@@ -17,9 +17,9 @@ interface SharedPrefProvider {
 	) :
 		SharedPrefProvider {
 		
-		override fun run() = true.apply { sharedPreferences.edit().putBoolean("0", true).apply() }
+		override fun run() = true.apply { sharedPreferences.edit().putBoolean("0", this).apply() }
 		
-		override fun stop() = false.apply { sharedPreferences.edit().putBoolean("0", false).apply() }
+		override fun stop() = false.apply { sharedPreferences.edit().putBoolean("0", this).apply() }
 		
 		override fun isRunning() = sharedPreferences.getBoolean("0", false)
 	}

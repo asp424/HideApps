@@ -1,51 +1,77 @@
 package com.lm.hideapps.receiver_service
 
 import android.app.Service
-import android.content.BroadcastReceiver
-import android.content.Context
 import android.content.Intent
 import android.content.Intent.*
 import android.content.IntentFilter
 import android.os.Binder
+import android.util.Log
+import com.lm.hideapps.R
+import com.lm.hideapps.broadcast_reciever.IntentBroadcastReceiver
 import com.lm.hideapps.core.appComponent
-import com.lm.hideapps.notification.NotificationProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 class IntentReceiveService : Service() {
 	
-	private val binder = LocalBinder()
+	private var bind = false
 	
 	private var job: Job = Job()
 	
-	private fun broadcastReceiver(onReceive: (String) -> Unit) =
-		object : BroadcastReceiver() {
-			override fun onReceive(context: Context?, intent: Intent?) {
-				onReceive(intent?.action.toString())
-			}
-		}
-	
-	fun receiver(actions: List<String>) = callbackFlow {
-		broadcastReceiver { trySendBlocking(it) }.also { receiver ->
-			actions.forEach { registerReceiver(receiver, IntentFilter(it)) }
-			awaitClose { unregisterReceiver(receiver) }
-		}
-	}.flowOn(IO)
+	private val intentFlow = MutableSharedFlow<String>(0, 0, BufferOverflow.SUSPEND)
+	val actionFlow get() = intentFlow.asSharedFlow()
 	
 	override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-		startForeground(101, appComponent.notificationProvider().serviceNotification())
-		collectActions()
+		appComponent.notificationProvider().apply {
+			startForeground(101, serviceNotification())
+			job.cancel(); job = CoroutineScope(IO).launch {
+			receiver(actions).collect { action ->
+				if (!bind) actionNotification(action)
+				CoroutineScope(IO).launch {
+					intentFlow.emit(action.substringAfter(getString(R.string.substring)))
+					cancel()
+				}
+			}
+		}
+		}
 		return START_NOT_STICKY
 	}
 	
-	override fun onBind(intent: Intent?) = binder
+	private suspend fun receiver(actions: List<String>) = callbackFlow {
+		IntentBroadcastReceiver { trySendBlocking(it) }.also { receiver ->
+				actions.forEach { registerReceiver(receiver, IntentFilter(it)) }
+				awaitClose { unregisterReceiver(receiver) }
+			}
+	}.flowOn(IO)
+	
+	private val actions by lazy {
+		listOf(ACTION_POWER_CONNECTED, ACTION_HEADSET_PLUG, ACTION_POWER_DISCONNECTED)
+	}
+	
+	override fun onBind(intent: Intent?) = LocalBinder().apply { bind = true; Log.d("My", "bind") }
+	
+	override fun onUnbind(intent: Intent?): Boolean {
+		bind = false
+		Log.d("My", "unbind")
+		return super.onUnbind(intent)
+	}
+	
+	override fun onRebind(intent: Intent?) {
+		super.onRebind(intent)
+		bind = true
+		Log.d("My", "rebind")
+		
+	}
 	
 	inner class LocalBinder : Binder() {
 		fun service(): IntentReceiveService = this@IntentReceiveService
@@ -54,16 +80,6 @@ class IntentReceiveService : Service() {
 	override fun onDestroy() {
 		super.onDestroy()
 		job.cancel()
-	}
-	
-	private fun collectActions() = CoroutineScope(IO).launch {
-		receiver(actions).collect { action ->
-			appComponent.notificationProvider().actionNotification(action)
-		}
-	}.apply { job = this }
-	
-	private val actions by lazy {
-		listOf(ACTION_POWER_CONNECTED, ACTION_HEADSET_PLUG, ACTION_POWER_DISCONNECTED)
 	}
 }
 

@@ -8,6 +8,7 @@ import android.os.IBinder
 import com.lm.hideapps.receiver_service.IntentReceiveService
 import dagger.Module
 import dagger.Provides
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.callbackFlow
@@ -34,7 +35,9 @@ class BindServiceModule {
 				Intent(application, IntentReceiveService::class.java), this,
 				Application.BIND_AUTO_CREATE
 			)
-			awaitClose { if (bound) application.unbindService(this); bound = false }
+			awaitClose { if (bound) application.unbindService(this); bound = false
+			cancel()
+			}
 		}
 	}
 }

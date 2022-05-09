@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">HideApps</string>
-    <string name="name">HideApps</string>
+    <string name="name">Start intent service</string>
     <string name="substring">android.intent.action.</string>
     <string name="key">1</string>
+    <string name="description_service">Service for listen broadcast intents</string>
 </resources>

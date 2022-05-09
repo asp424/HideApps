@@ -9,7 +9,7 @@ import androidx.core.app.NotificationManagerCompat
 import com.lm.hideapps.R
 import javax.inject.Inject
 
-interface ServiceNotificationInteractor {
+interface ServiceNotification {
 	
 	fun serviceNotification(): Notification
 	
@@ -17,7 +17,7 @@ interface ServiceNotificationInteractor {
 		private val notificationManager: NotificationManagerCompat,
 		private val notificationBuilder: NotificationCompat.Builder,
 		private val resources: Resources
-	) : ServiceNotificationInteractor {
+	) : ServiceNotification {
 		override fun serviceNotification(): Notification {
 			serviceChannel
 			return notificationBuilder

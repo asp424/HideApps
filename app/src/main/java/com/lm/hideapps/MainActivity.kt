@@ -7,16 +7,11 @@ import com.lm.hideapps.core.appComponent
 import com.lm.hideapps.di.compose_di.MainDependencies
 import com.lm.hideapps.ui.screens.ServiceControl
 
-
 class MainActivity : ComponentActivity() {
 	
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		
-		setContent {
-			MainDependencies(appComponent) {
-				ServiceControl()
-			}
-		}
+		setContent { MainDependencies(appComponent) { ServiceControl() } }
 	}
 }

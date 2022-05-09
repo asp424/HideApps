@@ -9,10 +9,8 @@ import javax.inject.Singleton
 @Module
 class NotificationManagerModule {
 	
-	
 	@Provides
 	@Singleton
-	fun bindsNotificationManager(application: Application) =
+	fun providesNotificationManager(application: Application) =
 		NotificationManagerCompat.from(application)
-	
 }

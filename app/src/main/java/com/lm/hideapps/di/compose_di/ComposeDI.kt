@@ -5,17 +5,13 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
 import com.lm.hideapps.di.dagger.AppComponent
 
-private val LocalMainDependencies = staticCompositionLocalOf<AppComponent> { error("No value provided") }
-
 @Composable
-fun MainDependencies(appComponent: AppComponent, content: @Composable () -> Unit) {
-	
-	CompositionLocalProvider(
-		LocalMainDependencies provides appComponent, content = content
-	)
-}
+fun MainDependencies(appComponent: AppComponent, content: @Composable () -> Unit) =
+	CompositionLocalProvider(Local provides appComponent, content = content)
 
-object MainDep { val appComponent: AppComponent @Composable get() = LocalMainDependencies.current }
+private val Local = staticCompositionLocalOf<AppComponent> { error("No value provided") }
+
+object MainDep { val appComponent @Composable get() = Local.current }
 
 
 

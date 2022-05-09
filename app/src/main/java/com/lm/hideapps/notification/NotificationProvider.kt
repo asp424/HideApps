@@ -12,13 +12,13 @@ interface NotificationProvider {
 	fun actionNotification(action: String): Job
 	
 	class Base @Inject constructor(
-		private val serviceNotificationInteractor: ServiceNotificationInteractor,
-		private val actionsNotificationInteractor: ActionsNotificationInteractor
+		private val serviceNotification: ServiceNotification,
+		private val actionsNotification: ActionsNotification
 	) : NotificationProvider {
-		override fun serviceNotification() = serviceNotificationInteractor.serviceNotification()
+		override fun serviceNotification() = serviceNotification.serviceNotification()
 		
 		override fun actionNotification(action: String): Job
-		= actionsNotificationInteractor.actionNotification(action)
+		= actionsNotification.actionNotification(action)
 	
 	}
 }

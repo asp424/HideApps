@@ -1,6 +1,7 @@
 package com.lm.hideapps.di.dagger.modules
 
 import android.app.Application
+import android.content.res.Resources
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -10,5 +11,5 @@ class ResourcesModule {
 	
 	@Provides
 	@Singleton
-	fun providesResources(application: Application) = application.resources
+	fun providesResources(application: Application): Resources = application.resources
 }

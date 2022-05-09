@@ -2,7 +2,6 @@ package com.lm.hideapps.notification
 
 import android.app.NotificationChannel
 import android.app.NotificationManager.IMPORTANCE_HIGH
-import android.app.PendingIntent
 import android.content.res.Resources
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationCompat.PRIORITY_MAX
@@ -11,7 +10,7 @@ import com.lm.hideapps.R
 import kotlinx.coroutines.*
 import javax.inject.Inject
 
-interface ActionsNotificationInteractor {
+interface ActionsNotification {
 	
 	fun actionNotification(action: String): Job
 	
@@ -23,7 +22,7 @@ interface ActionsNotificationInteractor {
 		private val notificationBuilder: NotificationCompat.Builder,
 		private val notificationManager: NotificationManagerCompat,
 		private val resources: Resources
-	) : ActionsNotificationInteractor {
+	) : ActionsNotification {
 		
 		override fun actionNotification(
 			title: String,

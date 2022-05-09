@@ -1,7 +1,6 @@
 package com.lm.hideapps.di.dagger
 
 import android.app.Application
-import com.lm.hideapps.MainActivity
 import com.lm.hideapps.notification.NotificationProvider
 import com.lm.hideapps.receiver_service.IntentReceiveService
 import com.lm.hideapps.shared_pref.SharedPrefProvider
