@@ -3,15 +3,20 @@ package com.lm.hideapps
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.ExperimentalAnimationApi
 import com.lm.hideapps.core.appComponent
 import com.lm.hideapps.di.compose_di.MainDependencies
 import com.lm.hideapps.ui.screens.ServiceControl
 
 class MainActivity : ComponentActivity() {
-	
-	override fun onCreate(savedInstanceState: Bundle?) {
-		super.onCreate(savedInstanceState)
-		
-		setContent { MainDependencies(appComponent) { ServiceControl() } }
-	}
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        setContent {
+            MainDependencies(appComponent) {
+                ServiceControl()
+            }
+        }
+    }
 }

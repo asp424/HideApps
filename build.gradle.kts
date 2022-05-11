@@ -1,5 +1,5 @@
 
-buildscript { dependencies; scriptBuilder }
+buildscript { scriptBuilder }
 
 allprojects { repositories.repository }
 
