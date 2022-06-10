@@ -2,9 +2,7 @@ package com.lm.hideapps.di.dagger
 
 import com.lm.hideapps.di.dagger.modules.*
 import dagger.Module
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 
-@OptIn(ExperimentalCoroutinesApi::class)
 @Module(
 	includes = [
 		NotificationProviderModule::class,
@@ -13,9 +11,13 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 		NotificationManagerModule::class,
 		NotificationBuilderModule::class,
 		ResourcesModule::class,
-		ServiceControlModule::class,
-		BindServiceModule::class,
-		SharedPreferencesModule::class
+		IntentReceiveServiceControlModule::class,
+		BindIntentReceiveServiceModule::class,
+		SharedPreferencesModule::class,
+		PermissionsModule::class,
+		MicrophoneModule::class,
+		SnoreServiceControlModule::class,
+		BindSnoreServiceModule::class
 	]
 )
 interface MapModule

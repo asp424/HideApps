@@ -1,10 +1,13 @@
 package com.lm.hideapps.notification
 
 import android.app.Notification
+import android.app.Notification.CATEGORY_SERVICE
+import android.app.Notification.VISIBILITY_PRIVATE
 import android.app.NotificationChannel
 import android.app.NotificationManager.IMPORTANCE_HIGH
 import android.content.res.Resources
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationCompat.PRIORITY_MAX
 import androidx.core.app.NotificationManagerCompat
 import com.lm.hideapps.R
 import javax.inject.Inject
@@ -24,15 +27,15 @@ interface ServiceNotification {
 				.setOngoing(true)
 				.setContentTitle(resources.getString(R.string.name))
 				.setSmallIcon(R.mipmap.ic_launcher)
-				.setPriority(NotificationCompat.PRIORITY_MAX)
-				.setCategory(NotificationCompat.CATEGORY_SERVICE)
+				.setPriority(PRIORITY_MAX)
+				.setCategory(CATEGORY_SERVICE)
 				.build()
 		}
 		
 		private val serviceChannel by lazy {
 			resources.getString(R.string.name).also { title ->
 				NotificationChannel(title, title, IMPORTANCE_HIGH).apply {
-					lockscreenVisibility = NotificationCompat.VISIBILITY_PRIVATE
+					lockscreenVisibility = VISIBILITY_PRIVATE
 					notificationManager.createNotificationChannel(this)
 				}
 			}

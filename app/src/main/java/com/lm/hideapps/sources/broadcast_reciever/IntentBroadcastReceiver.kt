@@ -1,4 +1,4 @@
-package com.lm.hideapps.broadcast_reciever
+package com.lm.hideapps.sources.broadcast_reciever
 
 import android.content.BroadcastReceiver
 import android.content.Context

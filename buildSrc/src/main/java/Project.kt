@@ -7,15 +7,8 @@ import org.gradle.kotlin.dsl.maven
 import org.gradle.kotlin.dsl.register
 import java.io.File
 
-val ScriptHandler.scriptBuilder
-    get() = run { gradleList.forEach {
-        dependencies.add(CLASSPATH_CONFIGURATION, it) }; repositories.repository
-    }
 
-val RepositoryHandler.repository get() = run { google(); mavenCentral()
-    maven("https://maven.pkg.jetbrains.space/public/p/compose/dev"); gradlePluginPortal()
-
-}
+val RepositoryHandler.repository get() = run { google(); mavenCentral() }
 
 fun Project.clearProject(file: File) = tasks.register("type", Delete::class) { delete(file) }
 

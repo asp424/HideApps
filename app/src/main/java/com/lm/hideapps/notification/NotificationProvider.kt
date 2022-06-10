@@ -15,10 +15,11 @@ interface NotificationProvider {
 		private val serviceNotification: ServiceNotification,
 		private val actionsNotification: ActionsNotification
 	) : NotificationProvider {
-		override fun serviceNotification() = serviceNotification.serviceNotification()
+
+		override fun serviceNotification()
+		= serviceNotification.serviceNotification()
 		
-		override fun actionNotification(action: String): Job
+		override fun actionNotification(action: String)
 		= actionsNotification.actionNotification(action)
-	
 	}
 }

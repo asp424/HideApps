@@ -1,2 +1,2 @@
 rootProject.name = "HideApps"
-include ':app'
+include (":app")
