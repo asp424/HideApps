@@ -1,4 +1,4 @@
-package com.lm.hideapps.services
+package com.lm.hideapps.sources.broadcast_reciever
 
 import android.app.Service
 import android.content.Intent
@@ -6,8 +6,7 @@ import android.content.Intent.*
 import android.content.IntentFilter
 import android.os.Binder
 import com.lm.hideapps.R
-import com.lm.hideapps.core.appComponent
-import com.lm.hideapps.sources.broadcast_reciever.IntentBroadcastReceiver
+import com.lm.hideapps.core.AppComponentGetter.appComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Job
@@ -15,10 +14,13 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 
-class IntentReceiveService : Service() {
+class IntentBroadcastReceiverService : Service() {
 
     private var bind = false
 
@@ -74,7 +76,7 @@ class IntentReceiveService : Service() {
     }
 
     inner class LocalBinder : Binder() {
-        fun service(): IntentReceiveService = this@IntentReceiveService
+        fun service(): IntentBroadcastReceiverService = this@IntentBroadcastReceiverService
     }
 
     override fun onDestroy() {

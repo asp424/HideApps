@@ -8,7 +8,7 @@
 
     <application
         android:name=".core.App"
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:launchMode="singleTask"
@@ -16,7 +16,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.HideApps">
         <activity
-            android:name=".MainActivity"
+            android:name=".presentation.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -25,10 +25,10 @@
             </intent-filter>
         </activity>
         <service
-            android:name=".services.IntentReceiveService"
+            android:name=".sources.broadcast_reciever.IntentBroadcastReceiverService"
             android:description="@string/description_service" />
         <service
-            android:name=".services.SnoreService"
+            android:name=".sources.microphone.MicrophoneService"
             android:description="@string/description_snore_service" />
     </application>
 </manifest>

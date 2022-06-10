@@ -5,7 +5,7 @@ import android.content.ComponentName
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.IBinder
-import com.lm.hideapps.services.IntentReceiveService
+import com.lm.hideapps.sources.broadcast_reciever.IntentBroadcastReceiverService
 import dagger.Module
 import dagger.Provides
 import kotlinx.coroutines.cancel
@@ -23,7 +23,7 @@ class BindIntentReceiveServiceModule {
 		var bound = false
 		object : ServiceConnection {
 			override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-				trySendBlocking((service as IntentReceiveService.LocalBinder).service()); bound =
+				trySendBlocking((service as IntentBroadcastReceiverService.LocalBinder).service()); bound =
 					true
 			}
 			
@@ -32,7 +32,7 @@ class BindIntentReceiveServiceModule {
 			}
 		}.apply {
 			if (!bound) bound = application.bindService(
-				Intent(application, IntentReceiveService::class.java), this,
+				Intent(application, IntentBroadcastReceiverService::class.java), this,
 				Application.BIND_AUTO_CREATE
 			)
 			awaitClose { if (bound) application.unbindService(this); bound = false

@@ -2,8 +2,8 @@ package com.lm.hideapps.di.dagger.modules
 
 import android.app.Application
 import android.content.Intent
-import com.lm.hideapps.services.IntentReceiveService
-import com.lm.hideapps.shared_pref.SharedPrefProvider
+import com.lm.hideapps.sources.broadcast_reciever.IntentBroadcastReceiverService
+import com.lm.hideapps.core.SPreferences
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -14,10 +14,10 @@ class IntentReceiveServiceControlModule {
 	@Provides
 	@Singleton
 	fun providesIntentReceiveServiceControl(
-		application: Application, sharedPrefProvider: SharedPrefProvider,
+		application: Application, sharedPrefProvider: SPreferences,
 	): ((Boolean) -> Unit) -> Intent =
 		{
-			Intent(application, IntentReceiveService::class.java)
+			Intent(application, IntentBroadcastReceiverService::class.java)
 				.also { intent ->
 					if (!sharedPrefProvider.isRunning()) {
 						application.startForegroundService(intent); it(sharedPrefProvider.run())

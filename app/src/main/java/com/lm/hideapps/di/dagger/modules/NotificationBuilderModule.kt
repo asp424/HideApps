@@ -6,7 +6,7 @@ import android.app.PendingIntent
 import android.app.PendingIntent.FLAG_UPDATE_CURRENT
 import android.content.Intent
 import androidx.core.app.NotificationCompat
-import com.lm.hideapps.MainActivity
+import com.lm.hideapps.presentation.MainActivity
 import com.lm.hideapps.R
 import dagger.Module
 import dagger.Provides

@@ -13,11 +13,12 @@ import dagger.Module
 		ResourcesModule::class,
 		IntentReceiveServiceControlModule::class,
 		BindIntentReceiveServiceModule::class,
-		SharedPreferencesModule::class,
+		SPreferencesModule::class,
 		PermissionsModule::class,
 		MicrophoneModule::class,
 		SnoreServiceControlModule::class,
-		BindSnoreServiceModule::class
+		BindSnoreServiceModule::class,
+		MediaPlayerModule::class
 	]
 )
 interface MapModule

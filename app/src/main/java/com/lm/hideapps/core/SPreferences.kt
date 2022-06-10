@@ -1,10 +1,10 @@
-package com.lm.hideapps.shared_pref
+package com.lm.hideapps.core
 
 import android.content.SharedPreferences
 import javax.inject.Inject
 
 
-interface SharedPrefProvider {
+interface SPreferences {
 	
 	fun run(): Boolean
 	
@@ -15,7 +15,7 @@ interface SharedPrefProvider {
 	class Base @Inject constructor(
 		private val sharedPreferences: SharedPreferences,
 	) :
-		SharedPrefProvider {
+        SPreferences {
 		
 		override fun run() = true.apply { sharedPreferences.edit().putBoolean("0", this).apply() }
 		

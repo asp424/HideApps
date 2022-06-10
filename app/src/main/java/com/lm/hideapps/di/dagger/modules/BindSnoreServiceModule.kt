@@ -5,7 +5,7 @@ import android.content.ComponentName
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.IBinder
-import com.lm.hideapps.services.SnoreService
+import com.lm.hideapps.sources.microphone.MicrophoneService
 import dagger.Module
 import dagger.Provides
 import kotlinx.coroutines.cancel
@@ -23,7 +23,7 @@ class BindSnoreServiceModule {
         var bound = false
         object : ServiceConnection {
             override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-                trySendBlocking((service as SnoreService.LocalBinder).service()); bound =
+                trySendBlocking((service as MicrophoneService.LocalBinder).service()); bound =
                     true
             }
 
@@ -32,7 +32,7 @@ class BindSnoreServiceModule {
             }
         }.apply {
             if (!bound) bound = application.bindService(
-                Intent(application, SnoreService::class.java), this,
+                Intent(application, MicrophoneService::class.java), this,
                 Application.BIND_AUTO_CREATE
             )
             awaitClose {

@@ -2,8 +2,8 @@ package com.lm.hideapps.di.dagger.modules
 
 import android.app.Application
 import android.content.Intent
-import com.lm.hideapps.services.SnoreService
-import com.lm.hideapps.shared_pref.SharedPrefProvider
+import com.lm.hideapps.sources.microphone.MicrophoneService
+import com.lm.hideapps.core.SPreferences
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -14,10 +14,10 @@ class SnoreServiceControlModule {
     @Provides
     @Singleton
     fun providesSnoreServiceControl(
-        application: Application, sharedPrefProvider: SharedPrefProvider,
+        application: Application, sharedPrefProvider: SPreferences,
     ): ((Boolean) -> Unit) -> Unit =
         {
-            Intent(application, SnoreService::class.java)
+            Intent(application, MicrophoneService::class.java)
                 .also { intent ->
                     if (!sharedPrefProvider.isRunning()) {
                         application.startForegroundService(intent); it(sharedPrefProvider.run())
