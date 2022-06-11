@@ -18,7 +18,8 @@ import dagger.Module
 		MicrophoneModule::class,
 		SnoreServiceControlModule::class,
 		BindSnoreServiceModule::class,
-		MediaPlayerModule::class
+		MediaPlayerModule::class,
+		JsoupRepositoryModule::class
 	]
 )
 interface MapModule

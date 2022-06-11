@@ -1,24 +1,17 @@
 package com.lm.hideapps.sources.microphone
 
-import android.Manifest.permission.RECORD_AUDIO
 import android.app.Service
 import android.content.Intent
-import android.media.AudioFormat
-import android.media.AudioFormat.CHANNEL_IN_MONO
-import android.media.AudioFormat.ENCODING_PCM_16BIT
-import android.media.AudioRecord
-import android.media.MediaRecorder.AudioSource.MIC
 import android.os.Binder
 import com.lm.hideapps.R
 import com.lm.hideapps.core.AppComponentGetter.appComponent
+import com.lm.hideapps.utils.getSound
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 
@@ -28,23 +21,31 @@ class MicrophoneService : Service() {
 
     private var job: Job = Job()
 
-    private val levelFlow = MutableSharedFlow<Int>(0, 0, BufferOverflow.SUSPEND)
+    private val tempFlow = MutableSharedFlow<String>(0, 0, BufferOverflow.SUSPEND)
 
-    val micLevelFlow get() = levelFlow.asSharedFlow()
+    val temp get() = tempFlow.asSharedFlow()
 
-    private val mediaPlayer by lazy { appComponent.mediaPlayer().invoke(R.raw.a) }
+    private var isLoadingTemp = false
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        appComponent.apply {
+            startForeground(101, notificationProvider().serviceNotification())
 
-        startForeground(101, appComponent.notificationProvider().serviceNotification())
-
-        job.cancel(); if (!job.isActive) job = CoroutineScope(IO).launch {
-            appComponent.microphone().getMicLevelWithDefault.collect {
-                levelFlow.emit(it)
-                if (it > 3000) mediaPlayer.start()
+            job.cancel(); if (!job.isActive) job = CoroutineScope(IO).launch {
+            microphone().getMicLevelWithDefault.collect {
+                if (it > 15000 && !isLoadingTemp) {
+                    if (bind) tempFlow.emit("true")
+                    isLoadingTemp = true
+                    playSound().invoke(R.raw.a){}
+                    jsoupRepository().gismeteoNowTemp().collect { temp ->
+                        if (bind) tempFlow.emit(temp)
+                        playSound().invoke(temp.getSound()){ isLoadingTemp = false }
+                    }
+                }
             }
         }
-        return START_NOT_STICKY
+            return START_NOT_STICKY
+        }
     }
 
     override fun onBind(intent: Intent?) = LocalBinder().apply { bind = true }
@@ -66,16 +67,5 @@ class MicrophoneService : Service() {
     override fun onDestroy() {
         super.onDestroy()
         job.cancel()
-        mediaPlayer.release()
-    }
-
-    private val minSize by lazy { AudioRecord.getMinBufferSize(config[0], config[1], config[2]) }
-    private val buffer by lazy { ShortArray(minSize) }
-    private val config by lazy {
-        listOf(
-            8000,
-            AudioFormat.CHANNEL_IN_DEFAULT,
-            AudioFormat.ENCODING_PCM_16BIT
-        )
     }
 }

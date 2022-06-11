@@ -55,6 +55,9 @@ dependencies {
     implementation("androidx.compose.animation:animation:$composeVersion")
     implementation("androidx.compose.material3:material3:1.0.0-alpha13")
     implementation("androidx.activity:activity-compose:1.4.0")
+
+    //Jsoup
+    implementation("org.jsoup:jsoup:1.14.3")
 }
 
 

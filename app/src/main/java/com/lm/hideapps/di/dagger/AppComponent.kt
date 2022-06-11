@@ -9,6 +9,7 @@ import com.lm.hideapps.notification.NotificationProvider
 import com.lm.hideapps.sources.broadcast_reciever.IntentBroadcastReceiverService
 import com.lm.hideapps.sources.microphone.MicrophoneService
 import com.lm.hideapps.core.SPreferences
+import com.lm.hideapps.data.JsoupRepository
 import dagger.BindsInstance
 import dagger.Component
 import kotlinx.coroutines.flow.Flow
@@ -34,5 +35,6 @@ interface AppComponent {
 	fun notificationProvider(): NotificationProvider
 	fun microphone(): Microphone
 	fun permissions(): Permissions
-	fun mediaPlayer(): (Int) -> MediaPlayer
+	fun playSound(): (Int, onRelease: () -> Unit) -> Unit
+	fun jsoupRepository(): JsoupRepository
 }

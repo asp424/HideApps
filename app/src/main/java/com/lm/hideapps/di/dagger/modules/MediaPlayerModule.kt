@@ -11,7 +11,13 @@ class MediaPlayerModule {
 
     @Provides
     @Singleton
-    fun providesMediaPlayer(application: Application): (Int) -> MediaPlayer = {
-        MediaPlayer.create(application, it)
-    }
+    fun providesMediaPlayer(application: Application): (Int, onRelease: () -> Unit) -> Unit =
+        { source, onRelease ->
+            runCatching { MediaPlayer.create(application, source) }
+                .onSuccess {
+                    it.apply {
+                        start(); setOnCompletionListener { release(); onRelease() }
+                    }
+                }
+        }
 }

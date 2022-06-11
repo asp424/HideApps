@@ -5,7 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import com.lm.hideapps.core.AppComponentGetter.appComponent
 import com.lm.hideapps.di.compose_di.MainDependencies
-import com.lm.hideapps.ui.screens.ServiceControl
+import com.lm.hideapps.ui.screens.Main
 
 class MainActivity : ComponentActivity() {
 
@@ -13,7 +13,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         appComponent.permissions().apply {
             launchIfHasPermissions {
-                setContent { MainDependencies(appComponent) { ServiceControl() } }
+                setContent { MainDependencies(appComponent) { Main() } }
             }
         }
     }
