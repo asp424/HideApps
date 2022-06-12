@@ -11,9 +11,14 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         appComponent.permissions().apply {
             launchIfHasPermissions {
-                setContent { MainDependencies(appComponent) { Main() } }
+                setContent {
+                    MainDependencies(appComponent) {
+                        Main()
+                    }
+                }
             }
         }
     }

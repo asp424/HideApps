@@ -2,14 +2,12 @@ package com.lm.hideapps.di.dagger
 
 import android.app.Application
 import android.content.Intent
-import android.media.MediaPlayer
 import com.lm.hideapps.core.Permissions
-import com.lm.hideapps.sources.microphone.Microphone
 import com.lm.hideapps.notification.NotificationProvider
 import com.lm.hideapps.sources.broadcast_reciever.IntentBroadcastReceiverService
 import com.lm.hideapps.sources.microphone.MicrophoneService
 import com.lm.hideapps.core.SPreferences
-import com.lm.hideapps.data.JsoupRepository
+import com.lm.hideapps.sources.speech_recognize.SpeechRecognizeProvider
 import dagger.BindsInstance
 import dagger.Component
 import kotlinx.coroutines.flow.Flow
@@ -33,8 +31,8 @@ interface AppComponent {
 	fun bindIntentReceiveService(): Flow<IntentBroadcastReceiverService>
 	fun bindSnoreService(): Flow<MicrophoneService>
 	fun notificationProvider(): NotificationProvider
-	fun microphone(): Microphone
 	fun permissions(): Permissions
 	fun playSound(): (Int, onRelease: () -> Unit) -> Unit
-	fun jsoupRepository(): JsoupRepository
+	fun speechRecognizerProvider(): SpeechRecognizeProvider
+	fun inject(microphoneService: MicrophoneService)
 }

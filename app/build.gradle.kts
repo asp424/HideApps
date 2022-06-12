@@ -55,9 +55,13 @@ dependencies {
     implementation("androidx.compose.animation:animation:$composeVersion")
     implementation("androidx.compose.material3:material3:1.0.0-alpha13")
     implementation("androidx.activity:activity-compose:1.4.0")
+    implementation ("androidx.compose.runtime:runtime-livedata:1.2.0-beta03")
 
     //Jsoup
     implementation("org.jsoup:jsoup:1.14.3")
+
+    //LeakCanary
+    debugImplementation ("com.squareup.leakcanary:leakcanary-android:2.9.1")
 }
 
 
