@@ -31,10 +31,10 @@
             </intent-filter>
         </activity>
         <service
-            android:name=".sources.broadcast_reciever.IntentBroadcastReceiverService"
+            android:name=".services.IntentBroadcastReceiverService"
             android:description="@string/description_service" />
         <service
-            android:name=".sources.microphone.MicrophoneService"
+            android:name=".services.MicrophoneService"
             android:description="@string/description_snore_service" />
     </application>
 </manifest>

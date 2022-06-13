@@ -1,7 +1,6 @@
-package com.lm.hideapps.utils
+package com.lm.hideapps.core
 
 import android.content.res.Resources
-import com.lm.hideapps.core.Mapper
 import javax.inject.Inject
 import kotlin.math.round
 
@@ -10,7 +9,7 @@ class StringToIntMapper @Inject constructor(
     private val packageName: String
 ) : Mapper<String, Int> {
 
-    override fun map(string: String, type: String) = with(string) {
+    override fun stringToSoundId(string: String, type: String) = with(string) {
         if (isNotEmpty())
             with(round(substring(1).replace(",", ".").toFloat()).toInt()) {
                 resources.getIdentifier(

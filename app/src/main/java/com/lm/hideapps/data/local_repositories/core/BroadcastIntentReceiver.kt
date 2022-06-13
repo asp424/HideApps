@@ -1,10 +1,10 @@
-package com.lm.hideapps.sources.broadcast_reciever
+package com.lm.hideapps.data.local_repositories.core
 
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 
-class IntentBroadcastReceiver(private val onReceive: (String) -> Unit)
+class BroadcastIntentReceiver(private val onReceive: (String) -> Unit)
 	: BroadcastReceiver() {
 	
 	override fun onReceive(context: Context?, intent: Intent?) =

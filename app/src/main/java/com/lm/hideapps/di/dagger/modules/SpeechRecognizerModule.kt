@@ -7,11 +7,11 @@ import dagger.Provides
 import javax.inject.Singleton
 
 @Module
-class SpeechRecognizerCreatorModule {
+class SpeechRecognizerModule {
 
     @Provides
     @Singleton
-    fun providesSpeechRecognizerCreator(application: Application): SpeechRecognizer =
+    fun providesSpeechRecognizer(application: Application): SpeechRecognizer =
         SpeechRecognizer.createSpeechRecognizer(application)
 
 }

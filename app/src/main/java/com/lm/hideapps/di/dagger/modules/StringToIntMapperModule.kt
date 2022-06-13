@@ -2,7 +2,7 @@ package com.lm.hideapps.di.dagger.modules
 
 import android.app.Application
 import android.content.res.Resources
-import com.lm.hideapps.utils.StringToIntMapper
+import com.lm.hideapps.core.StringToIntMapper
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton

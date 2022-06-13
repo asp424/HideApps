@@ -2,18 +2,18 @@ package com.lm.hideapps.di.dagger.modules
 
 import android.app.Application
 import android.content.Intent
-import com.lm.hideapps.sources.microphone.MicrophoneService
+import com.lm.hideapps.services.MicrophoneService
 import com.lm.hideapps.core.SPreferences
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
 
 @Module
-class SnoreServiceControlModule {
+class MicrophoneServiceControlModule {
 
     @Provides
     @Singleton
-    fun providesSnoreServiceControl(
+    fun providesMicrophoneServiceControl(
         application: Application, sharedPrefProvider: SPreferences,
     ): ((Boolean) -> Unit) -> Unit =
         {

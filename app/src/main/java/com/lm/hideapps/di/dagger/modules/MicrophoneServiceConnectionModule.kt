@@ -5,7 +5,7 @@ import android.content.ComponentName
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.IBinder
-import com.lm.hideapps.sources.microphone.MicrophoneService
+import com.lm.hideapps.services.MicrophoneService
 import dagger.Module
 import dagger.Provides
 import kotlinx.coroutines.cancel
@@ -15,11 +15,11 @@ import kotlinx.coroutines.flow.callbackFlow
 import javax.inject.Singleton
 
 @Module
-class BindSnoreServiceModule {
+class MicrophoneServiceConnectionModule {
 
     @Provides
     @Singleton
-    fun providesBindSnoreService(application: Application) = callbackFlow {
+    fun providesMicrophoneServiceConnection(application: Application) = callbackFlow {
         var bound = false
         object : ServiceConnection {
             override fun onServiceConnected(name: ComponentName?, service: IBinder?) {

@@ -5,26 +5,21 @@ import dagger.Module
 
 @Module(
 	includes = [
-		NotificationProviderModule::class,
-		ServiceNotificationModule::class,
-		ActionsNotificationModule::class,
+		NotificationsModule::class,
 		NotificationManagerModule::class,
 		NotificationBuilderModule::class,
 		ResourcesModule::class,
 		IntentReceiveServiceControlModule::class,
-		BindIntentReceiveServiceModule::class,
+		IntentReceiveServiceConnectionModule::class,
 		SPreferencesModule::class,
 		PermissionsModule::class,
-		MicrophoneModule::class,
-		SnoreServiceControlModule::class,
-		BindSnoreServiceModule::class,
-		PlaySoundModule::class,
-		JsoupRepositoryModule::class,
+		MicrophoneServiceControlModule::class,
+		MicrophoneServiceConnectionModule::class,
 		StringToIntMapperModule::class,
-		MicServiceHandlerModule::class,
 		SpeechRecognizeIsAvailableModule::class,
-		SpeechRecognizerCreatorModule::class,
-		SpeechRecognizeProviderModule::class
+		SpeechRecognizerModule::class,
+		NotificationsModule::class,
+		MicrophoneServiceUseCaseModule::class
 	]
 )
 interface MapModule

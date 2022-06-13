@@ -5,7 +5,7 @@ import android.content.ComponentName
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.IBinder
-import com.lm.hideapps.sources.broadcast_reciever.IntentBroadcastReceiverService
+import com.lm.hideapps.services.IntentBroadcastReceiverService
 import dagger.Module
 import dagger.Provides
 import kotlinx.coroutines.cancel
@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.callbackFlow
 import javax.inject.Singleton
 
 @Module
-class BindIntentReceiveServiceModule {
+class IntentReceiveServiceConnectionModule {
 	
 	@Provides
 	@Singleton

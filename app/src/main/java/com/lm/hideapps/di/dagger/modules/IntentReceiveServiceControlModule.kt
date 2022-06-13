@@ -2,7 +2,7 @@ package com.lm.hideapps.di.dagger.modules
 
 import android.app.Application
 import android.content.Intent
-import com.lm.hideapps.sources.broadcast_reciever.IntentBroadcastReceiverService
+import com.lm.hideapps.services.IntentBroadcastReceiverService
 import com.lm.hideapps.core.SPreferences
 import dagger.Module
 import dagger.Provides

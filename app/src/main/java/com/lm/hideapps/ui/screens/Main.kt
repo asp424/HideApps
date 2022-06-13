@@ -22,7 +22,7 @@ import kotlinx.coroutines.launch
 fun Main() {
     var tempJob: Job by remember { mutableStateOf(Job()) }
     appComponent.apply {
-        var isRunning by remember { mutableStateOf(sharedPreferences().isRunning()) }
+        var isRunning by remember { mutableStateOf(sPreferences().isRunning()) }
         val coroutine = rememberCoroutineScope()
         var temp by rememberSaveable { mutableStateOf("") }
         var text by rememberSaveable { mutableStateOf("") }
@@ -30,12 +30,12 @@ fun Main() {
         var isLoading by rememberSaveable { mutableStateOf("null") }
         var isRecognize by remember { mutableStateOf("true") }
         var starter by remember { mutableStateOf(0) }
-        var sliderPosition by remember { mutableStateOf(sharedPreferences().readLevel()) }
+        var sliderPosition by remember { mutableStateOf(sPreferences().readLevel()) }
 
         LaunchedEffect(starter) {
             if (isRecognize.toBoolean() && starter != 0) {
                 isRecognize = "false"
-                speechRecognizerProvider().startRecognize().collect {
+                microphoneRepository().recognizedWordsAsFlow("ru-RU").collect {
                     if (it[0] == "true") isRecognize = it[0]
                     else text = it.toString()
                         .substringAfter("[").substringBefore("]")
@@ -47,8 +47,8 @@ fun Main() {
             if (fetchTemp) {
                 if (!tempJob.isActive) {
                     tempJob = coroutine.launch {
-                        bindSnoreService().collect {
-                            it.micServiceHandler.temp.collect { t ->
+                        microphoneServiceConnection().collect {
+                            it.tempForUI.collect { t ->
                                 isLoading = if (t == "true") t else "false"
                                 temp = t
                             }
@@ -59,14 +59,14 @@ fun Main() {
         }
 
         LaunchedEffect(sliderPosition) {
-            sharedPreferences().saveLevel(sliderPosition)
+            sPreferences().saveLevel(sliderPosition)
         }
 
         Column(Modifier.fillMaxSize(), Center, CenterHorizontally) {
             Button(
-                { snoreServiceControl().invoke { isRunning = it } },
+                { microphoneServiceControl().invoke { isRunning = it } },
                 Modifier.padding(bottom = 10.dp),
-                enabled = !(isRunning && fetchTemp && sharedPreferences().isRunning())
+                enabled = !(isRunning && fetchTemp && sPreferences().isRunning())
             ) { Text(text = if (isRunning) "stop listen mic" else "start listen mic") }
 
             if (!isRunning) {
@@ -76,7 +76,7 @@ fun Main() {
             }
 
             Text(
-                text = (sliderPosition * 20000).toInt().toString(), fontWeight = FontWeight.Bold,
+                text = (sliderPosition * 50000).toInt().toString(), fontWeight = FontWeight.Bold,
                 fontStyle = FontStyle.Italic
 
             )

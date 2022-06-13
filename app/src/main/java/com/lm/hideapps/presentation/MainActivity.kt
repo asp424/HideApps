@@ -3,7 +3,7 @@ package com.lm.hideapps.presentation
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import com.lm.hideapps.core.AppComponentGetter.appComponent
+import com.lm.hideapps.core.appComponent
 import com.lm.hideapps.di.compose_di.MainDependencies
 import com.lm.hideapps.ui.screens.Main
 
