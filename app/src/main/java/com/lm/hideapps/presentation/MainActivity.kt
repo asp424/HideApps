@@ -5,7 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import com.lm.hideapps.core.appComponent
 import com.lm.hideapps.di.compose_di.MainDependencies
-import com.lm.hideapps.ui.screens.Main
+import com.lm.hideapps.presentation.ui.screens.Main
 
 class MainActivity : ComponentActivity() {
 

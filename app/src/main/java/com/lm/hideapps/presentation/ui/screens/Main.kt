@@ -1,4 +1,4 @@
-package com.lm.hideapps.ui.screens
+package com.lm.hideapps.presentation.ui.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement.Center
@@ -15,6 +15,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.lm.hideapps.di.compose_di.MainDep.appComponent
+import com.lm.hideapps.use_cases.MicrophoneServiceUseCase.Base.Companion.SCALE
+import com.lm.hideapps.use_cases.MicrophoneServiceUseCase.Base.Companion.START_LOADING
+import com.lm.hideapps.use_cases.MicrophoneServiceUseCase.Base.Companion.STOP_LOADING
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
@@ -48,8 +51,10 @@ fun Main() {
                 if (!tempJob.isActive) {
                     tempJob = coroutine.launch {
                         microphoneServiceConnection().collect {
-                            it.tempForUI.collect { t ->
-                                isLoading = if (t == "true") t else "false"
+                            it.temperatureForUI.collect { t ->
+                                isLoading =
+                                    if (t == START_LOADING.toString())
+                                    START_LOADING.toString() else STOP_LOADING.toString()
                                 temp = t
                             }
                         }
@@ -60,6 +65,10 @@ fun Main() {
 
         LaunchedEffect(sliderPosition) {
             sPreferences().saveLevel(sliderPosition)
+        }
+
+        LaunchedEffect(isRunning){
+        isRecognize = (!isRunning).toString()
         }
 
         Column(Modifier.fillMaxSize(), Center, CenterHorizontally) {
@@ -76,7 +85,7 @@ fun Main() {
             }
 
             Text(
-                text = (sliderPosition * 50000).toInt().toString(), fontWeight = FontWeight.Bold,
+                text = (sliderPosition * SCALE).toInt().toString(), fontWeight = FontWeight.Bold,
                 fontStyle = FontStyle.Italic
 
             )

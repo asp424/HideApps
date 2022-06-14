@@ -62,6 +62,9 @@ dependencies {
 
     //LeakCanary
     debugImplementation ("com.squareup.leakcanary:leakcanary-android:2.9.1")
+
+    //Tests
+    implementation("androidx.benchmark:benchmark-junit4:1.0.0")
 }
 
 

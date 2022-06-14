@@ -1,6 +1,7 @@
 package com.lm.hideapps.di.dagger.modules
 
 import android.app.Application
+import android.app.Service
 import android.content.Intent
 import com.lm.hideapps.services.IntentBroadcastReceiverService
 import com.lm.hideapps.core.SPreferences
@@ -20,9 +21,11 @@ class IntentReceiveServiceControlModule {
 			Intent(application, IntentBroadcastReceiverService::class.java)
 				.also { intent ->
 					if (!sharedPrefProvider.isRunning()) {
-						application.startForegroundService(intent); it(sharedPrefProvider.run())
+						application.startForegroundService(intent)
+						it(sharedPrefProvider.run())
 					} else {
-						application.stopService(intent); it(sharedPrefProvider.stop())
+						application.stopService(intent)
+						it(sharedPrefProvider.stop())
 					}
 				}
 		}

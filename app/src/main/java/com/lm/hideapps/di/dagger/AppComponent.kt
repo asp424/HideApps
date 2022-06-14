@@ -6,6 +6,7 @@ import com.lm.hideapps.core.SPreferences
 import com.lm.hideapps.data.local_repositories.MicrophoneRepository
 import com.lm.hideapps.services.IntentBroadcastReceiverService
 import com.lm.hideapps.services.MicrophoneService
+import com.lm.hideapps.use_cases.MicrophoneServiceUseCase
 import dagger.BindsInstance
 import dagger.Component
 import kotlinx.coroutines.flow.Flow
@@ -30,4 +31,5 @@ interface AppComponent {
     fun microphoneRepository(): MicrophoneRepository
     fun microphoneServiceControl(): ((Boolean) -> Unit) -> Unit
     fun microphoneServiceConnection(): Flow<MicrophoneService>
+    fun microphoneServiceUseCase(): MicrophoneServiceUseCase
 }

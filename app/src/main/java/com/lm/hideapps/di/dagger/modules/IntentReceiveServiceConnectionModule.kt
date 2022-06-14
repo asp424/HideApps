@@ -2,6 +2,7 @@ package com.lm.hideapps.di.dagger.modules
 
 import android.app.Application
 import android.content.ComponentName
+import android.content.Context.BIND_AUTO_CREATE
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.IBinder
@@ -23,8 +24,10 @@ class IntentReceiveServiceConnectionModule {
 		var bound = false
 		object : ServiceConnection {
 			override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-				trySendBlocking((service as IntentBroadcastReceiverService.LocalBinder).service()); bound =
-					true
+				trySendBlocking(
+					(service as IntentBroadcastReceiverService.LocalBinder).service()
+				)
+				bound = true
 			}
 			
 			override fun onServiceDisconnected(name: ComponentName?) {
@@ -33,9 +36,10 @@ class IntentReceiveServiceConnectionModule {
 		}.apply {
 			if (!bound) bound = application.bindService(
 				Intent(application, IntentBroadcastReceiverService::class.java), this,
-				Application.BIND_AUTO_CREATE
+				BIND_AUTO_CREATE
 			)
-			awaitClose { if (bound) application.unbindService(this); bound = false
+			awaitClose { if (bound) application.unbindService(this)
+				bound = false
 			cancel()
 			}
 		}

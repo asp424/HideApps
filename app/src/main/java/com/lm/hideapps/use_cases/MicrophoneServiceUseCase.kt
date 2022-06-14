@@ -1,102 +1,122 @@
 package com.lm.hideapps.use_cases
 
 import android.content.Context
-import android.content.res.Resources
 import android.media.AudioFormat.CHANNEL_IN_DEFAULT
 import android.media.AudioFormat.ENCODING_PCM_16BIT
-import android.media.MediaPlayer
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import com.lm.hideapps.R
+import com.lm.hideapps.core.MediaPlayerProvider
 import com.lm.hideapps.core.SPreferences
-import com.lm.hideapps.core.StringToIntMapper
+import com.lm.hideapps.core.WeatherMapper
 import com.lm.hideapps.data.local_repositories.MicrophoneRepository
+import com.lm.hideapps.data.remote_repositories.LoadStates
 import com.lm.hideapps.data.remote_repositories.WeatherRepository
-import kotlinx.coroutines.*
+import com.lm.hideapps.notifications.Notifications
+import com.lm.hideapps.services.MicrophoneService
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class MicrophoneServiceUseCase @Inject constructor(
-    private val microphoneRepository: MicrophoneRepository,
-    private val weatherRepository: WeatherRepository,
-    private val mapper: StringToIntMapper,
-    private val sPreferences: SPreferences,
-    private val resources: Resources
-) {
+interface MicrophoneServiceUseCase {
 
-    private var bind = false
-    var serviceJob: Job = Job()
-    private var isTriggered = false
+    fun onBind()
 
-    val tempFlow =
-        MutableSharedFlow<String>(0, 0, BufferOverflow.SUSPEND)
+    fun onUnbind()
 
-    private suspend fun onTriggered(context: Context) {
-        isTriggered = true
-        emit("true")
-        playSound(context, R.raw.triggered) {}
-    }
+    fun onStartCommand(context: MicrophoneService)
 
-    private suspend fun onGetTemperature(context: Context, temperature: String) {
-        emit(temperature)
-        playSound(
-            context, mapper.stringToSoundId(
-                temperature, resources.getString(R.string.raw)
-            )
-        ) { isTriggered = false }
-    }
+    fun startServiceJob(onLaunch: suspend CoroutineScope.() -> Unit)
 
-    private suspend fun emit(value: String) {
-        if (bind) coroutineScope {
-            launch(Dispatchers.IO) { tempFlow.emit(value) }
-        }
-    }
+    fun cancelServiceJob()
 
-    fun onStartCommandWork(context: Context) {
-        serviceJob.cancel()
-        serviceJob = CoroutineScope(Dispatchers.IO).launch {
-            microphoneRepository.microphoneLevelAsFlow(
-                8000, CHANNEL_IN_DEFAULT, ENCODING_PCM_16BIT
-            ).collect {
-                if (it > triggeringLevel && !isTriggered) {
-                    onTriggered(context)
-                    weatherRepository.nowTemperature().collect { temperature ->
-                        onGetTemperature(context, temperature)
-                    }
-                }
-            }
-        }
-    }
+    fun temperatureForUIAsFlow(): SharedFlow<String>
 
-    private fun playSound(context: Context, source: Int, onStop: () -> Unit = {}) =
-        CoroutineScope(Dispatchers.IO).launch {
-            var player: MediaPlayer? = null
-            runCatching {
-                player = MediaPlayer.create(context, source)
-            }.onSuccess {
-                player?.apply {
-                    runCatching {
-                        start()
-                        setOnCompletionListener {
-                            release()
-                            player = null
-                            onStop()
-                        }
-                    }
-                }
+    class Base @Inject constructor(
+        private val microphoneRepository: MicrophoneRepository,
+        private val weatherRepository: WeatherRepository,
+        private val sPreferences: SPreferences,
+        private val notifications: Notifications,
+        private val mediaPlayer: MediaPlayerProvider,
+        private val serviceDispatcher: CoroutineDispatcher,
+        private val stringConverter: WeatherMapper
+    ) : MicrophoneServiceUseCase {
+
+        override fun onStartCommand(context: MicrophoneService) {
+            context.startForeground(101, notifications.showForegroundNotification())
+            startServiceJob {
+                    microphoneRepository.microphoneLevelAsFlow(
+                        8000, CHANNEL_IN_DEFAULT, ENCODING_PCM_16BIT
+                    ).collect { onGetLevel(it, context) }
             }
         }
 
-    fun setBindTrue() {
-        bind = true
-    }
+        override fun startServiceJob(
+            onLaunch: suspend CoroutineScope.() -> Unit
+        ) {
+            cancelServiceJob()
+            serviceJob.value = CoroutineScope(serviceDispatcher)
+                .launch { onLaunch(this) }
+        }
 
-    fun setBindFalse() {
-        bind = false
-    }
+        override fun onBind() { isBind.value = BIND }
 
-    fun cancelServiceJob() {
-        serviceJob.cancel()
-    }
+        override fun onUnbind() { isBind.value = UNBIND }
 
-    private val triggeringLevel get() = sPreferences.readLevel() * 50000
+        override fun cancelServiceJob() = serviceJob.value.cancel()
+
+        override fun temperatureForUIAsFlow() = temperatureForUIAsFlow.asSharedFlow()
+
+        private suspend fun onGetLevel(level: Int, context: Context) {
+            if (level > triggeringLevel && !isDo.value) {
+                isDo.value = START_LOADING
+                START_LOADING.toString().emitToUI()
+                mediaPlayer.playSound(context, R.raw.triggered) {}
+                getTemperature(context)
+            }
+        }
+
+        private suspend fun getTemperature(context: Context) {
+            weatherRepository.nowTemperature().collect { temperature ->
+                when(temperature){
+                    is LoadStates.OnSuccess -> {
+                        temperature.temperature.emitToUI()
+                        mediaPlayer.playSound(context, temperature.id)
+                        { isDo.value = STOP_LOADING }
+                    }
+
+                    is LoadStates.OnError -> mediaPlayer.playSound(context, R.raw.error)
+                    { isDo.value = STOP_LOADING }
+                }
+            }
+        }
+
+        private val temperatureForUIAsFlow =
+            MutableSharedFlow<String>(0, 0, BufferOverflow.SUSPEND)
+
+        private val isBind by lazy { mutableStateOf(STOP_LOADING) }
+
+        private val serviceJob: MutableState<Job> by lazy { mutableStateOf(Job()) }
+
+        private val isDo by lazy { mutableStateOf(STOP_LOADING) }
+
+        private val triggeringLevel get() = sPreferences.readLevel() * SCALE
+
+        private suspend fun String.emitToUI() =
+            if (isBind.value) temperatureForUIAsFlow.emit(this) else Unit
+
+        companion object {
+            const val START_LOADING = true
+            const val BIND = true
+            const val STOP_LOADING = false
+            const val UNBIND = false
+            const val SCALE = 32000
+        }
+    }
 }

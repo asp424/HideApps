@@ -1,4 +1,4 @@
-package com.lm.hideapps.ui.cells
+package com.lm.hideapps.presentation.ui.cells
 
 import androidx.compose.animation.*
 import androidx.compose.runtime.Composable

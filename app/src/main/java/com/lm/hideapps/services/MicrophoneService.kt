@@ -4,40 +4,30 @@ import android.app.Service
 import android.content.Intent
 import android.os.Binder
 import com.lm.hideapps.core.appComponent
-import com.lm.hideapps.notifications.Notifications
-import com.lm.hideapps.use_cases.MicrophoneServiceUseCase
-import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.asSharedFlow
-import javax.inject.Inject
 
 class MicrophoneService : Service() {
 
-    @Inject
-    lateinit var notifications: Notifications
+    private val microphoneServiceUseCase by lazy { appComponent.microphoneServiceUseCase() }
 
-    @Inject
-    lateinit var microphoneServiceUseCase: MicrophoneServiceUseCase
-
-    val tempForUI get() = microphoneServiceUseCase.tempFlow.asSharedFlow()
+    val temperatureForUI get() = microphoneServiceUseCase.temperatureForUIAsFlow()
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        appComponent.inject(this@MicrophoneService)
-        startForeground(101, notifications.showForegroundNotification())
-        microphoneServiceUseCase.onStartCommandWork(this)
+        microphoneServiceUseCase.onStartCommand(this)
         return START_NOT_STICKY
     }
 
     override fun onBind(intent: Intent?) = LocalBinder()
-        .apply { microphoneServiceUseCase.setBindTrue() }
+        .apply { microphoneServiceUseCase.onBind() }
 
     override fun onUnbind(intent: Intent?): Boolean {
-        microphoneServiceUseCase.setBindFalse()
+        microphoneServiceUseCase.onUnbind()
         return super.onUnbind(intent)
     }
 
     override fun onRebind(intent: Intent?) {
         super.onRebind(intent)
-        microphoneServiceUseCase.setBindTrue()
+        microphoneServiceUseCase.onBind()
     }
 
     inner class LocalBinder : Binder() {
