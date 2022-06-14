@@ -8,9 +8,9 @@ import androidx.compose.runtime.mutableStateOf
 import com.lm.hideapps.R
 import com.lm.hideapps.core.MediaPlayerProvider
 import com.lm.hideapps.core.SPreferences
-import com.lm.hideapps.core.WeatherMapper
+import com.lm.hideapps.data.remote_repositories.WeatherMapper
 import com.lm.hideapps.data.local_repositories.MicrophoneRepository
-import com.lm.hideapps.data.remote_repositories.LoadStates
+import com.lm.hideapps.data.remote_repositories.LoadWeatherStates
 import com.lm.hideapps.data.remote_repositories.WeatherRepository
 import com.lm.hideapps.notifications.Notifications
 import com.lm.hideapps.services.MicrophoneService
@@ -85,13 +85,13 @@ interface MicrophoneServiceUseCase {
         private suspend fun getTemperature(context: Context) {
             weatherRepository.nowTemperature().collect { temperature ->
                 when(temperature){
-                    is LoadStates.OnSuccess -> {
+                    is LoadWeatherStates.OnSuccess -> {
                         temperature.temperature.emitToUI()
                         mediaPlayer.playSound(context, temperature.id)
                         { isDo.value = STOP_LOADING }
                     }
 
-                    is LoadStates.OnError -> mediaPlayer.playSound(context, R.raw.error)
+                    is LoadWeatherStates.OnError -> mediaPlayer.playSound(context, R.raw.error)
                     { isDo.value = STOP_LOADING }
                 }
             }

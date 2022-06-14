@@ -2,7 +2,6 @@ package com.lm.hideapps.data.remote_repositories
 
 import android.content.res.Resources
 import com.lm.hideapps.R
-import com.lm.hideapps.core.WeatherMapper
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import org.jsoup.Jsoup
@@ -16,7 +15,7 @@ class WeatherRepository @Inject constructor(
     ) {
 
     suspend fun nowTemperature() =
-        suspendCoroutine<Flow<LoadStates>> { continuation ->
+        suspendCoroutine<Flow<LoadWeatherStates>> { continuation ->
             runCatching {
                 Jsoup.connect(resources.getString(R.string.gis_krymsk_now_url)).get()
                     .getElementsByClass(resources.getString(R.string.gis_temp_today))[0]?.text()

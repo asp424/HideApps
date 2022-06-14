@@ -1,7 +1,7 @@
 package com.lm.hideapps
 
 import androidx.test.platform.app.InstrumentationRegistry
-import com.lm.hideapps.core.WeatherMapper
+import com.lm.hideapps.data.remote_repositories.WeatherMapper
 import com.lm.hideapps.data.local_repositories.BroadcastIntentRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
