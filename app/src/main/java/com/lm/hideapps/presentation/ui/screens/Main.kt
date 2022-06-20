@@ -7,106 +7,84 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.font.FontStyle.Companion.Italic
+import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.lm.hideapps.di.compose_di.MainDep.appComponent
+import com.lm.hideapps.presentation.view_models.MainViewModel
+import com.lm.hideapps.service.LocalServiceBindState
+import com.lm.hideapps.service.LocalServiceState
 import com.lm.hideapps.use_cases.MicrophoneServiceUseCase.Base.Companion.SCALE
-import com.lm.hideapps.use_cases.MicrophoneServiceUseCase.Base.Companion.START_LOADING
-import com.lm.hideapps.use_cases.MicrophoneServiceUseCase.Base.Companion.STOP_LOADING
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 
 @Composable
-fun Main() {
-    var tempJob: Job by remember { mutableStateOf(Job()) }
+fun Main(mainViewModel: MainViewModel) {
     appComponent.apply {
-        var isRunning by remember { mutableStateOf(sPreferences().isRunning()) }
-        val coroutine = rememberCoroutineScope()
-        var temp by rememberSaveable { mutableStateOf("") }
-        var text by rememberSaveable { mutableStateOf("") }
-        var fetchTemp by rememberSaveable { mutableStateOf(false) }
-        var isLoading by rememberSaveable { mutableStateOf("null") }
-        var isRecognize by remember { mutableStateOf("true") }
-        var starter by remember { mutableStateOf(0) }
-        var sliderPosition by remember { mutableStateOf(sPreferences().readLevel()) }
-
-        LaunchedEffect(starter) {
-            if (isRecognize.toBoolean() && starter != 0) {
-                isRecognize = "false"
-                microphoneRepository().recognizedWordsAsFlow("ru-RU").collect {
-                    if (it[0] == "true") isRecognize = it[0]
-                    else text = it.toString()
-                        .substringAfter("[").substringBefore("]")
-                }
-            }
-        }
-
-        LaunchedEffect(fetchTemp) {
-            if (fetchTemp) {
-                if (!tempJob.isActive) {
-                    tempJob = coroutine.launch {
-                        microphoneServiceConnection().collect {
-                            it.temperatureForUI.collect { t ->
-                                isLoading =
-                                    if (t == START_LOADING.toString())
-                                    START_LOADING.toString() else STOP_LOADING.toString()
-                                temp = t
-                            }
-                        }
-                    }
-                }
-            } else tempJob.cancel(); temp = ""
-        }
+        val temperature by mainViewModel.temperature.collectAsState()
+        val serviceIsRunning by mainViewModel.serviceIsRunning.collectAsState()
+        val isBindToService by mainViewModel.isBindToService.collectAsState()
+        var sliderPosition by remember { mutableStateOf(sPreferences().readMicrophoneLevel()) }
 
         LaunchedEffect(sliderPosition) {
-            sPreferences().saveLevel(sliderPosition)
-        }
-
-        LaunchedEffect(isRunning){
-        isRecognize = (!isRunning).toString()
+            sPreferences().saveMicrophoneLevel(sliderPosition)
         }
 
         Column(Modifier.fillMaxSize(), Center, CenterHorizontally) {
             Button(
-                { microphoneServiceControl().invoke { isRunning = it } },
+                {
+                    if (serviceIsRunning == LocalServiceState.STOPPED)
+                        mainViewModel.startMicrophoneService()
+                    else mainViewModel.stopMicrophoneService()
+                },
                 Modifier.padding(bottom = 10.dp),
-                enabled = !(isRunning && fetchTemp && sPreferences().isRunning())
-            ) { Text(text = if (isRunning) "stop listen mic" else "start listen mic") }
+                enabled = isBindToService == LocalServiceBindState.UNBINDING
 
-            if (!isRunning) {
+            ) {
+                Text(
+                    text = if (serviceIsRunning == LocalServiceState.RUNNING)
+                        "stop listen mic" else "start listen mic"
+                )
+            }
+
+            if (serviceIsRunning == LocalServiceState.STOPPED) {
                 Slider(value = sliderPosition, onValueChange = {
                     sliderPosition = it
                 }, modifier = Modifier.padding(start = 20.dp, end = 20.dp))
             }
 
             Text(
-                text = (sliderPosition * SCALE).toInt().toString(), fontWeight = FontWeight.Bold,
-                fontStyle = FontStyle.Italic
-
+                text = (sliderPosition * SCALE).toInt().toString(),
+                fontWeight = Bold, fontStyle = Italic
             )
+
             Text(text = "mic trigger level")
 
             Button(
-                { fetchTemp = !fetchTemp },
-                Modifier.padding(bottom = 10.dp, top = 10.dp), enabled = isRunning
-            ) { Text(text = if (fetchTemp) "stop binding" else "bind to getting gis temp") }
+                {
+                    if (isBindToService == LocalServiceBindState.UNBINDING)
+                        mainViewModel.bindToMicrophoneService()
+                    else mainViewModel.unBindToMicrophoneService()
+                },
+                Modifier.padding(bottom = 10.dp, top = 10.dp),
+                enabled = serviceIsRunning == LocalServiceState.RUNNING
 
+            ) {
+                Text(
+                    text = if (isBindToService == LocalServiceBindState.BINDING)
+                        "stop binding" else "bind to getting gis temp"
+                )
+            }
 
-            Button(
-                { starter++ },
-                Modifier.padding(bottom = 10.dp), enabled = isRecognize.toBoolean()
-            ) { Text(text = "recognize speech") }
-            Text(text = text)
             Box(modifier = Modifier.padding(top = 60.dp)) {
-                if (!isLoading.toBoolean()) {
-                    Text(temp, fontSize = 60.sp)
-                } else {
-                    CircularProgressIndicator(modifier = Modifier.size(60.dp))
+                when (temperature) {
+                    is TemperatureStates.OnSuccess -> Text(
+                        (temperature as TemperatureStates.OnSuccess).temperature
+                    )
+                    is TemperatureStates.OnLoading ->
+                        CircularProgressIndicator(modifier = Modifier.size(60.dp))
+
+                    is TemperatureStates.OnInit -> Text("weather here")
                 }
             }
         }

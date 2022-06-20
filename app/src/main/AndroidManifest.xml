@@ -30,11 +30,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <service
-            android:name=".services.IntentBroadcastReceiverService"
-            android:description="@string/description_service" />
-        <service
-            android:name=".services.MicrophoneService"
+                <service
+            android:name=".service.LocalService"
             android:description="@string/description_snore_service" />
     </application>
 </manifest>

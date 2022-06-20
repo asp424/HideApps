@@ -33,7 +33,7 @@ class BroadcastReceiverTest() {
     @Test
     fun receive() {
         CoroutineScope(IO).launch {
-            BroadcastIntentRepository.Base().receiveBroadcastIntentsAsFlow(
+            BroadcastIntentRepository.Base().receiveBroadcastIntentAsFlow(
                 listOf("ass"), appContext
             ).collect {
                 println(it)

@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Snore detector</string>
     <string name="name">Microphone service is running</string>
+    <string name="sPreferencesName">sPreferences</string>
     <string name="substring">android.intent.action.</string>
     <string name="key">1</string>
     <string name="description_service">Service for listen broadcast intents</string>
@@ -8,6 +9,7 @@
     <string name="gis_krymsk_now_url">https://www.gismeteo.ru/weather-krymsk-5212/now/</string>
     <string name="gis_temp_today">unit unit_temperature_c</string>
     <string name="p30">R.raw.p30</string>
-    <string name="raw">raw</string>
+    <string name="resource_type_raw">raw</string>
+    <string name="resource_type_string">string</string>
 
 </resources>

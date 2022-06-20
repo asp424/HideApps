@@ -1,34 +1,59 @@
 package com.lm.hideapps.core
 
 import android.content.SharedPreferences
+import com.lm.hideapps.service.LocalServiceState
 import javax.inject.Inject
 
 
 interface SPreferences {
 
-    fun run(): Boolean
+    fun serviceWasRunning(): LocalServiceState
 
-    fun saveLevel(level: Float)
+    fun serviceWasStopped(): LocalServiceState
 
-    fun readLevel(): Float
+    fun serviceIsRunning(): LocalServiceState
 
-    fun stop(): Boolean
+    fun saveMicrophoneLevel(level: Float)
 
-    fun isRunning(): Boolean
+    fun readMicrophoneLevel(): Float
 
     class Base @Inject constructor(
         private val sharedPreferences: SharedPreferences,
-    ) :
-        SPreferences {
+    ) : SPreferences {
 
-        override fun run() = true.apply { sharedPreferences.edit().putBoolean("0", this).apply() }
+        override fun serviceWasRunning(): LocalServiceState {
+            sharedPreferences
+                .edit()
+                .putBoolean(SERVICE_RUNNING_STATE_KEY, true)
+                .apply()
+            return LocalServiceState.RUNNING
+        }
 
-        override fun saveLevel(level: Float) = sharedPreferences.edit().putFloat("1", level).apply()
+        override fun serviceWasStopped(): LocalServiceState {
+            sharedPreferences
+                .edit()
+                .putBoolean(SERVICE_RUNNING_STATE_KEY, false)
+                .apply()
+            return LocalServiceState.STOPPED
+        }
 
-        override fun readLevel() = sharedPreferences.getFloat("1", 0.5f)
+        override fun serviceIsRunning() = with(sharedPreferences
+            .getBoolean(SERVICE_RUNNING_STATE_KEY, false)){
+            if (this) LocalServiceState.RUNNING else LocalServiceState.STOPPED
+        }
 
-        override fun stop() = false.apply { sharedPreferences.edit().putBoolean("0", this).apply() }
+        override fun saveMicrophoneLevel(level: Float) = sharedPreferences
+            .edit()
+            .putFloat(MICROPHONE_LEVEL_KEY, level)
+            .apply()
 
-        override fun isRunning() = sharedPreferences.getBoolean("0", false)
+        override fun readMicrophoneLevel() = sharedPreferences
+            .getFloat(MICROPHONE_LEVEL_KEY, DEFAULT_MICROPHONE_LEVEL)
+
+        companion object {
+            const val SERVICE_RUNNING_STATE_KEY = "serviceRunningState"
+            const val MICROPHONE_LEVEL_KEY = "microphoneLevel"
+            const val DEFAULT_MICROPHONE_LEVEL = 0.5f
+        }
     }
 }

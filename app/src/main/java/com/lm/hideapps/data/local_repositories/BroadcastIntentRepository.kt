@@ -11,17 +11,17 @@ import kotlinx.coroutines.flow.callbackFlow
 
 interface BroadcastIntentRepository {
 
-    fun receiveBroadcastIntentsAsFlow(actions: List<String>, context: Context): Flow<String>
+    fun receiveBroadcastIntentAsFlow(actions: List<String>, context: Context): Flow<String>
 
-    fun broadcastReceiver(onReceive: (String) -> Unit): BroadcastReceiver
+    fun receiveBroadcastIntentWithInstanceOf(onReceive: (String) -> Unit): BroadcastReceiver
 
     infix fun String.editIntentAction(action: String): String
 
     class Base : BroadcastIntentRepository {
 
-        override fun receiveBroadcastIntentsAsFlow(actions: List<String>, context: Context) =
+        override fun receiveBroadcastIntentAsFlow(actions: List<String>, context: Context) =
             callbackFlow {
-                broadcastReceiver { trySendBlocking(it) }
+                receiveBroadcastIntentWithInstanceOf { trySendBlocking(it) }
                     .also { receiver ->
                         actions.forEach {
                             context.registerReceiver(receiver, IntentFilter(it))
@@ -30,7 +30,7 @@ interface BroadcastIntentRepository {
                     }
             }
 
-        override fun broadcastReceiver(onReceive: (String) -> Unit) =
+        override fun receiveBroadcastIntentWithInstanceOf(onReceive: (String) -> Unit) =
             object : BroadcastReceiver() {
                 override fun onReceive(context: Context?, intent: Intent?) {
                     onReceive(

@@ -8,25 +8,25 @@ import android.content.Intent
 import androidx.core.app.NotificationCompat
 import com.lm.hideapps.presentation.MainActivity
 import com.lm.hideapps.R
+import com.lm.hideapps.di.dagger.scopes.AppScope
 import dagger.Module
 import dagger.Provides
-import javax.inject.Singleton
 
 @Module
 class NotificationBuilderModule {
 	
 	@SuppressLint("UnspecifiedImmutableFlag")
 	@Provides
-	@Singleton
-	fun providesNotificationBuilder(application: Application) = NotificationCompat.Builder(
-		application,
-		application.resources.getString(
+	@AppScope
+	fun providesNotificationBuilder(context: Application) = NotificationCompat.Builder(
+		context,
+		context.resources.getString(
 			R.string.name
 		)
 	).setContentIntent(
 		PendingIntent.getActivity(
-			application, 0,
-			Intent(application, MainActivity::class.java), FLAG_UPDATE_CURRENT
+			context, 0,
+			Intent(context, MainActivity::class.java), FLAG_UPDATE_CURRENT
 		)
 	)
 }

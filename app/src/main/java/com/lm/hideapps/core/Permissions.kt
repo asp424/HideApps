@@ -7,6 +7,7 @@ import android.content.Context.ACTIVITY_SERVICE
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
+import com.lm.hideapps.di.dagger.AppDeps
 import com.lm.hideapps.presentation.MainActivity
 import javax.inject.Inject
 

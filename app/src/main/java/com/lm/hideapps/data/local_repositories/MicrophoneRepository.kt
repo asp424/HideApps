@@ -19,73 +19,84 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.isActive
 import javax.inject.Inject
 
-class MicrophoneRepository @Inject constructor(
-    private val speechRecognizerAvailable: () -> Boolean,
-    private val speechRecognizer: SpeechRecognizer,
-    private val permissions: Permissions
-) {
+
+interface MicrophoneRepository {
 
     fun recognizedWordsAsFlow(language: String): Flow<List<String>>
-            = callbackFlow {
-        if (speechRecognizerAvailable.invoke()) {
-            speechRecognizer.apply {
-                setRecognitionListener(
-                    SpeechRecognizeListener(
-                        onPartialResults_ =
-                        { bundle ->
-                            bundle.recognizedWords?.let { trySendBlocking(it.toList()) }
-                        },
-                        onEndOfSpeech_ = {
-                            trySendBlocking(listOf("true"))
-                            this@callbackFlow.cancel()
-                        }
-                    )
-                )
-                startListening(speechRecognizerIntent(language))
-                awaitClose { stopListening(); destroy() }
-            }
-        }
-    }
 
-    fun microphoneLevelAsFlow(sampleRateHz: Int, channelConfig: Int, audioFormat: Int) =
-        callbackFlow {
-            with(permissions) {
-                if (checkSinglePermission(Manifest.permission.RECORD_AUDIO)) {
-                    AudioRecord.getMinBufferSize(sampleRateHz, channelConfig, audioFormat)
-                        .also { minBufferSize ->
-                            ShortArray(minBufferSize).also { buffer ->
-                                AudioRecord(
-                                    MediaRecorder.AudioSource.MIC,
-                                    sampleRateHz,
-                                    channelConfig,
-                                    audioFormat,
-                                    minBufferSize
-                                ).apply {
-                                    startRecording()
-                                    while (isActive) {
-                                        read(buffer, 0, minBufferSize)
-                                        trySendBlocking(StrictMath.abs(buffer.maxOf { it }.toInt()))
-                                    }
-                                    awaitClose { stop(); release() }
-                                }
+    fun microphoneLevelAsFlow(
+        sampleRateHz: Int, channelConfig: Int, audioFormat: Int
+    ): Flow<Int>
+
+    class Base @Inject constructor(
+        private val speechRecognizerAvailable: () -> Boolean,
+        private val speechRecognizer: SpeechRecognizer,
+        private val permissions: Permissions
+    ): MicrophoneRepository {
+
+        override fun recognizedWordsAsFlow(language: String): Flow<List<String>>
+        = callbackFlow {
+            if (speechRecognizerAvailable.invoke()) {
+                speechRecognizer.apply {
+                    setRecognitionListener(
+                        SpeechRecognizeListener(
+                            onPartialResults_ =
+                            { bundle ->
+                                bundle.recognizedWords?.let { trySendBlocking(it.toList()) }
+                            },
+                            onEndOfSpeech_ = {
+                                trySendBlocking(listOf("true"))
+                                this@callbackFlow.cancel()
                             }
-                        }
+                        )
+                    )
+                    startListening(speechRecognizerIntent(language))
+                    awaitClose { stopListening(); destroy() }
                 }
             }
-        }.flowOn(Dispatchers.IO)
-
-    private fun speechRecognizerIntent(language: String) =
-        Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
-            putExtra(
-                RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
-            )
-            putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
-            putExtra(RecognizerIntent.EXTRA_LANGUAGE, language)
-            putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 100)
         }
 
-    private val Bundle.recognizedWords
-        get() = getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
+        override fun microphoneLevelAsFlow(sampleRateHz: Int, channelConfig: Int, audioFormat: Int) =
+            callbackFlow {
+                with(permissions) {
+                    if (checkSinglePermission(Manifest.permission.RECORD_AUDIO)) {
+                        AudioRecord.getMinBufferSize(sampleRateHz, channelConfig, audioFormat)
+                            .also { minBufferSize ->
+                                ShortArray(minBufferSize).also { buffer ->
+                                    AudioRecord(
+                                        MediaRecorder.AudioSource.MIC,
+                                        sampleRateHz,
+                                        channelConfig,
+                                        audioFormat,
+                                        minBufferSize
+                                    ).apply {
+                                        startRecording()
+                                        while (isActive) {
+                                            read(buffer, 0, minBufferSize)
+                                            trySendBlocking(StrictMath.abs(buffer.maxOf { it }
+                                                .toInt()))
+                                        }
+                                        awaitClose { stop(); release() }
+                                    }
+                                }
+                            }
+                    }
+                }
+            }.flowOn(Dispatchers.IO)
 
+        private fun speechRecognizerIntent(language: String) =
+            Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+                putExtra(
+                    RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                    RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
+                )
+                putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
+                putExtra(RecognizerIntent.EXTRA_LANGUAGE, language)
+                putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 100)
+            }
+
+        private val Bundle.recognizedWords
+            get() = getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
+
+    }
 }

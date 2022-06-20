@@ -7,11 +7,13 @@ import com.lm.hideapps.di.dagger.AppComponent
 
 @Composable
 fun MainDependencies(appComponent: AppComponent, content: @Composable () -> Unit) =
-	CompositionLocalProvider(Local provides appComponent, content = content)
+    CompositionLocalProvider(Local provides appComponent, content = content)
 
 private val Local = staticCompositionLocalOf<AppComponent> { error("No value provided") }
 
-object MainDep { val appComponent @Composable get() = Local.current }
+object MainDep {
+    val appComponent @Composable get() = Local.current
+}
 
 
 
