@@ -40,9 +40,9 @@ dependencies {
     kapt("com.google.dagger:dagger-compiler:2.42")
 
     //Base
-    implementation("androidx.core:core-ktx:1.9.0-alpha04")
+    implementation("androidx.core:core-ktx:1.9.0-alpha05")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.5.0-rc01")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.5.0-rc02")
 
     //Compose
     implementation("androidx.compose.ui:ui:$composeVersion")
@@ -55,7 +55,7 @@ dependencies {
     implementation("androidx.compose.animation:animation:$composeVersion")
     implementation("androidx.compose.material3:material3:1.0.0-alpha13")
     implementation("androidx.activity:activity-compose:1.4.0")
-    implementation ("androidx.compose.runtime:runtime-livedata:1.2.0-beta03")
+    implementation ("androidx.compose.runtime:runtime-livedata:1.2.0-rc02")
 
     //Jsoup
     implementation("org.jsoup:jsoup:1.14.3")
@@ -64,7 +64,7 @@ dependencies {
     debugImplementation ("com.squareup.leakcanary:leakcanary-android:2.9.1")
 
     //Tests
-    implementation("androidx.benchmark:benchmark-junit4:1.0.0")
+    implementation("androidx.benchmark:benchmark-junit4:1.1.0")
 }
 
 

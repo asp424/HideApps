@@ -35,54 +35,46 @@ interface LocalServiceBinder {
     class Base @Inject constructor(
         private val application: Application,
         private val microphoneServiceIntent: Intent
-        ) : LocalServiceBinder {
+    ) : LocalServiceBinder {
 
-        override fun bindToLocalService()
-                = callbackFlow {
-                    serviceConnection { trySendBlocking(it) }
-                        .apply {
-                            connect(this)
-                            awaitClose { disconnect(this)
-                                "disf".log
-
-                            }
-                        }
+        override fun bindToLocalService() = callbackFlow {
+            serviceConnection { trySendBlocking(it) }
+                .apply {
+                    connect(this)
+                    awaitClose { disconnect(this) }
+                }
         }.flowOn(IO)
 
         override fun connect(serviceConnection: ServiceConnection) {
+
             if (connectionState.value == LocalServiceConnectionState.DISCONNECTED) {
-                "connect".log
                 application.bindService(
-                    microphoneServiceIntent, serviceConnection,
-                    Application.BIND_AUTO_CREATE
+                    microphoneServiceIntent, serviceConnection, Application.BIND_AUTO_CREATE
                 )
             }
         }
 
         override fun disconnect(serviceConnection: ServiceConnection) {
+
             if (connectionState.value == LocalServiceConnectionState.CONNECTED) {
                 application.unbindService(serviceConnection)
                 connectionState.value = LocalServiceConnectionState.DISCONNECTED
             }
         }
 
-        override fun bind() {
-            bindingState.value = LocalServiceBindState.BINDING
-        }
+        override fun bind() { bindingState.value = LocalServiceBindState.BINDING }
 
-        override fun unBind() {
-            bindingState.value = LocalServiceBindState.UNBINDING
-        }
+        override fun unBind() { bindingState.value = LocalServiceBindState.UNBINDING }
 
         override fun isBind() = bindingState.value
 
-        override fun serviceConnection(
-            onConnect: (LocalService) -> Unit
-        ) = object : ServiceConnection {
-            override fun onServiceConnected(
-                name: ComponentName?, service: IBinder?
-            ) {
+        override fun serviceConnection(onConnect: (LocalService) -> Unit)
+        = object : ServiceConnection {
+
+            override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+
                 if (connectionState.value == LocalServiceConnectionState.DISCONNECTED) {
+
                     onConnect((service as LocalService.LocalBinder).service())
                     connectionState.value = LocalServiceConnectionState.CONNECTED
                 }
@@ -99,10 +91,6 @@ interface LocalServiceBinder {
 
         private val bindingState by lazy {
             mutableStateOf(LocalServiceBindState.UNBINDING)
-        }
-
-        private val localService: MutableState<LocalService?> by lazy {
-            mutableStateOf(null)
         }
     }
 }

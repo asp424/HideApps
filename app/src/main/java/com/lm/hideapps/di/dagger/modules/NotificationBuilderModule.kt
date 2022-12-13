@@ -18,12 +18,9 @@ class NotificationBuilderModule {
 	@SuppressLint("UnspecifiedImmutableFlag")
 	@Provides
 	@AppScope
-	fun providesNotificationBuilder(context: Application) = NotificationCompat.Builder(
-		context,
-		context.resources.getString(
-			R.string.name
-		)
-	).setContentIntent(
+	fun providesNotificationBuilder(context: Application) =
+		NotificationCompat.Builder(context, context.resources.getString(R.string.name))
+			.setContentIntent(
 		PendingIntent.getActivity(
 			context, 0,
 			Intent(context, MainActivity::class.java), FLAG_UPDATE_CURRENT

@@ -20,15 +20,14 @@ interface Permissions {
     class Base @Inject constructor(private val context: Application) : Permissions {
 
         private val checkMultiPermissions by lazy {
-            listOfPerm.all {
-                ActivityCompat.checkSelfPermission(context, it) == PERMISSION_GRANTED
-            }
+            listOfPerm.all { ActivityCompat.checkSelfPermission(context, it) == PERMISSION_GRANTED }
         }
 
         override fun checkSinglePermission(permission: String) =
             context.checkSelfPermission(permission) == PERMISSION_GRANTED
 
-        private fun MainActivity.permissionsLauncherRegistration(onAllPermissionsGet: () -> Unit) =
+        private fun MainActivity.permissionsLauncherRegistration(
+            onAllPermissionsGet: () -> Unit) =
             registerForActivityResult(
                 ActivityResultContracts.RequestMultiplePermissions()
             ) { result ->
@@ -42,8 +41,8 @@ interface Permissions {
            }
 
         private val MainActivity.clearUserData
-            get() =
-                (getSystemService(ACTIVITY_SERVICE) as ActivityManager).clearApplicationUserData()
+            get() = (getSystemService(ACTIVITY_SERVICE) as ActivityManager)
+                .clearApplicationUserData()
 
                 private val listOfPerm = arrayOf(RECORD_AUDIO)
     }
